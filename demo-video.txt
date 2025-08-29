@@ -1,0 +1,5 @@
+Santa Maze Game (main.py)
+By: Sarah Chen (sarahc2)
+
+Link to video:
+https://www.youtube.com/watch?v=NIX2mILdiOg&feature=youtu.be&ab_channel=SarahChen

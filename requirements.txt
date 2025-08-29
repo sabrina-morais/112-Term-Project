@@ -1,0 +1,5 @@
+Pillow==11.3.0
+pytest==8.4.1
+pytest-html==4.1.1
+pytest-cov==4.1.0
+qase-pytest==6.3.8
