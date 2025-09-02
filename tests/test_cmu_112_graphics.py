@@ -24,12 +24,6 @@ def test_scaleImage_size_change():
     scaled = app.scaleImage(img, 3)
     assert scaled.size == (30, 30)
 
-# def test_wrappedCanvas_invalid_create_image():
-#     app = App(autorun=False)
-#     canvas = WrappedCanvas(app)
-#     with pytest.raises(Exception):
-#         canvas.create_image(0, 0)  # sem parâmetros válidos
-
 # ---------------- INTEGRAÇÃO ----------------
 
 class DummyEvent:
@@ -40,41 +34,6 @@ class DummyEvent:
         self.keysym = keysym
         self.char = char
 
-# def test_app_lifecycle_methods_called():
-#     called = {}
-#     class MyApp(App):
-#         def appStarted(self): called["start"] = True
-#         def appStopped(self): called["stop"] = True
-
-#     app = MyApp(autorun=False)
-#     app._appStartedWrapper()
-#     assert "start" in called
-#     app._appStoppedWrapper()
-#     assert "stop" in called
-
-# def test_keyPressedWrapper_triggers_method():
-#     called = {}
-#     class MyApp(App):
-#         def keyPressed(self, event): called["ok"] = event.key
-
-#     app = MyApp(autorun=False)
-#     event = DummyEvent(keysym="a", char="a")
-#     app._keyPressedWrapper(event)
-#     assert called["ok"] == "a"
-
-# def test_mousePressed_and_released_change_state():
-#     class MyApp(App):
-#         def mousePressed(self, event): pass
-#         def mouseReleased(self, event): pass
-
-#     app = MyApp(autorun=False)
-#     event = DummyEvent(x=10, y=20)
-
-#     app._mousePressedWrapper(event)
-#     assert app._mouseIsPressed is True
-
-#     app._mouseReleasedWrapper(event)
-#     assert app._mouseIsPressed is False
 
 def test_timerFiredWrapper_runs():
     called = {}
