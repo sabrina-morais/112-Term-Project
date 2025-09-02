@@ -186,11 +186,11 @@ def getHash(obj):
 class WrappedCanvas(Canvas):
     # Enforces MVC: no drawing outside calls to redrawAll
     # Logs draw calls (for autograder) in canvas.loggedDrawingCalls
-    def __init__(wrappedCanvas, app):
-        wrappedCanvas.loggedDrawingCalls = [ ]
-        wrappedCanvas.logDrawingCalls = True
-        wrappedCanvas.inRedrawAll = False
-        wrappedCanvas.app = app
+    def __init__(self, app):
+        self.loggedDrawingCalls = [ ]
+        self.logDrawingCalls = True
+        self.inRedrawAll = False
+        self.app = app
         super().__init__(app._root, width=app.width, height=app.height)
 
     def log(self, methodName, args, kwargs):
