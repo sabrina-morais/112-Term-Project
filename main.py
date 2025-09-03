@@ -15,7 +15,7 @@ from gameScreens import *
 from mazeModes import *
 
 class MyApp(ModalApp):
-    def appStarted(app):
+    def app_started(app):
         # from gameScreens
         app.titleScreen = TitleScreen()
         app.backgroundScreen = BackgroundScreen()
@@ -37,9 +37,7 @@ class MyApp(ModalApp):
 
         app.setActiveMode(app.titleScreen)
 
-    def timerFired(app):
-        app._activeMode.timerFired()
-
-
+    def timer_fired(app):
+        app._activeMode.timer_fired()
 
 MyApp(width=1000, height=800)

@@ -17,8 +17,14 @@
 from cmu_112_graphics import *
 import random
 
+BACKGROUND_IMAGE_PATH = 'background.png'
+TITULO_FONTE = 'Baloo 60'
+TITULO_FONTE2 = 'Baloo 20'
+TITULO_FONTE3 = 'Baloo 30'
+TITULO_FONTE4 = 'GB18030Bitmap 11 bold'
+
 class TitleScreen(Mode):
-    def appStarted(mode):
+    def app_started(mode):
         mode.darkGreen = TitleScreen.rgbString(52, 102, 51)
         mode.green = TitleScreen.rgbString(89, 156, 93)
         mode.buttonColor = mode.green
@@ -28,19 +34,19 @@ class TitleScreen(Mode):
         mode.count = 0
         mode.title = mode.loadImage('title.png')
         mode.titleResized = mode.scaleImage(mode.title, 0.4)
-        mode.background = mode.loadImage('background.png')
+        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
         mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
 
     def rgbString(r, g, b):
         return f'#{r:02x}{g:02x}{b:02x}'
 
-    def mousePressed(mode, event):
+    def mouse_pressed(mode, event):
         if ((mode.width/2-150 <= event.x <= mode.width/2+150) 
             and (mode.height*2/3-50 <= event.y <= mode.height*2/3+50)):
             mode.app.setActiveMode(mode.app.backgroundScreen)
             mode.homeButtonColor = mode.green
     
-    def mouseMoved(mode, event):
+    def mouse_moved(mode, event):
         if ((mode.width/2-150 <= event.x <= mode.width/2+150) 
             and (mode.height*2/3-50 <= event.y <= mode.height*2/3+50)
             and (mode.buttonColor != 'dark green')):
@@ -52,7 +58,7 @@ class TitleScreen(Mode):
             and (mode.buttonColor != 'dark green')):
             mode.buttonColor = mode.green
 
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
             randomX = random.randrange(mode.width)
@@ -62,7 +68,7 @@ class TitleScreen(Mode):
         for snowball in mode.snow:
             snowball.fall()
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         # background
         canvas.create_image(mode.width/2, mode.height/2, 
                             image=ImageTk.PhotoImage(mode.backgroundResized))
@@ -98,7 +104,7 @@ class FallingSnow(Mode):
         mode.y += 3
 
 class BackgroundScreen(Mode):
-    def appStarted(mode):
+    def app_started(mode):
         mode.snow = []
         mode.snowR = 20
         mode.count = 0
@@ -121,10 +127,10 @@ bad memory by following the instructions on the
 next slide, and prove to the world that Santa 
 still has what it takes to deliver presents to 
 every last kid!'''
-        mode.background = mode.loadImage('background.png')
+        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
         mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
 
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
             randomX = random.randrange(mode.width)
@@ -134,7 +140,7 @@ every last kid!'''
         for snowball in mode.snow:
             snowball.fall()
 
-    def mousePressed(mode, event):
+    def mouse_pressed(mode, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
             mode.app.setActiveMode(mode.app.titleScreen)
             mode.homeButtonColor = mode.green
@@ -143,7 +149,7 @@ every last kid!'''
             mode.app.setActiveMode(mode.app.instructionsScreen)
             mode.nextButtonColor = mode.green
     
-    def mouseMoved(mode, event):
+    def mouse_moved(mode, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
             mode.homeButtonColor = mode.darkGreen
         elif ((mode.width-150 <= event.x <= mode.width-50) 
@@ -154,7 +160,7 @@ every last kid!'''
             or ((event.y < 50) or (event.y > 100))):
             mode.homeButtonColor = mode.nextButtonColor = mode.green
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         # background
         canvas.create_image(mode.width/2, mode.height/2, 
                             image=ImageTk.PhotoImage(mode.backgroundResized))
@@ -169,7 +175,7 @@ every last kid!'''
         canvas.create_text(mode.width/2, mode.height/10,
                             fill=mode.titleColor,
                             text='Background', 
-                            font='Baloo 60')
+                            font=TITULO_FONTE)
         # 'Home' button
         canvas.create_rectangle(50, 50, 150, 100,
                             fill=mode.homeButtonColor,
@@ -177,7 +183,7 @@ every last kid!'''
         canvas.create_text(100, 75,
                             fill=mode.homeButtonTextColor,
                             text='Home', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)
         # 'Next' button
         canvas.create_rectangle(mode.width-50, 50, mode.width-150, 100,
                             fill=mode.nextButtonColor,
@@ -185,7 +191,7 @@ every last kid!'''
         canvas.create_text(mode.width-100, 75,
                             fill=mode.nextButtonTextColor,
                             text='Next', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)
         # background text
         canvas.create_text(mode.width/2, mode.height/2-50,
                             fill='gold',
@@ -193,7 +199,7 @@ every last kid!'''
                             font='GB18030Bitmap 15')
 
 class InstructionsScreen(BackgroundScreen):
-    def appStarted(mode):
+    def app_started(mode):
         mode.snow = []
         mode.snowR = 20
         mode.count = 0
@@ -223,10 +229,10 @@ Hints:
 
 Proceed to the next page to choose Santa’s sleigh and begin. 
 Hurry - you’re running out of time!'''
-        mode.background = mode.loadImage('background.png')
+        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
         mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
 
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
             randomX = random.randrange(mode.width)
@@ -236,7 +242,7 @@ Hurry - you’re running out of time!'''
         for snowball in mode.snow:
             snowball.fall()
 
-    def mousePressed(mode, event):
+    def mouse_pressed(mode, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
             mode.app.setActiveMode(mode.app.backgroundScreen)
             mode.backButtonColor = mode.green
@@ -245,7 +251,7 @@ Hurry - you’re running out of time!'''
             mode.app.setActiveMode(mode.app.sleighScreen)
             mode.nextButtonColor = mode.green
     
-    def mouseMoved(mode, event):
+    def mouse_moved(mode, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
             mode.backButtonColor = mode.darkGreen
         elif ((mode.width-150 <= event.x <= mode.width-50) 
@@ -256,7 +262,7 @@ Hurry - you’re running out of time!'''
             or ((event.y < 50) or (event.y > 100))):
             mode.backButtonColor = mode.nextButtonColor = mode.green
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         # background
         canvas.create_image(mode.width/2, mode.height/2, 
                             image=ImageTk.PhotoImage(mode.backgroundResized))
@@ -271,7 +277,7 @@ Hurry - you’re running out of time!'''
         canvas.create_text(mode.width/2, mode.height/10,
                             fill=mode.titleColor,
                             text='Instructions', 
-                            font='Baloo 60')
+                            font=TITULO_FONTE)
         # 'Back' button
         canvas.create_rectangle(50, 50, 150, 100,
                             fill=mode.backButtonColor,
@@ -279,7 +285,7 @@ Hurry - you’re running out of time!'''
         canvas.create_text(100, 75,
                             fill=mode.backButtonTextColor,
                             text='Back', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)
         # 'Next' button
         canvas.create_rectangle(mode.width-50, 50, mode.width-150, 100,
                             fill=mode.nextButtonColor,
@@ -287,7 +293,7 @@ Hurry - you’re running out of time!'''
         canvas.create_text(mode.width-100, 75,
                             fill=mode.nextButtonTextColor,
                             text='Next', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)
         # instructions text
         canvas.create_text(mode.width/2, mode.height/2-40,
                             fill='gold',
@@ -295,7 +301,7 @@ Hurry - you’re running out of time!'''
                             font='GB18030Bitmap 12')
 
 class SleighScreen(BackgroundScreen):
-    def appStarted(mode):
+    def app_started(mode):
         mode.snow = []
         mode.snowR = 20
         mode.count = 0
@@ -357,10 +363,10 @@ Grinch! (who will steal his presents)'''
         mode.sleigh2Resized = mode.scaleImage(mode.sleigh2, 0.1)
         mode.sleigh3 = mode.loadImage('sleigh3.png')
         mode.sleigh3Resized = mode.scaleImage(mode.sleigh3, 0.1)
-        mode.background = mode.loadImage('background.png')
+        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
         mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
 
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
             randomX = random.randrange(mode.width)
@@ -370,16 +376,15 @@ Grinch! (who will steal his presents)'''
         for snowball in mode.snow:
             snowball.fall()
 
-    def mouseMoved(mode, event):
+    def mouse_moved(mode, event):
         # 'Back' and 'Home' button toggle
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
             mode.backButtonColor = mode.darkGreen
         elif ((mode.width-150 <= event.x <= mode.width-50) 
             and (50 <= event.y <= 100)):
             mode.nextButtonColor = mode.darkGreen
-        elif (((event.x < 50) or ((event.x > 150) 
-            and (event.x < mode.width-150)) or (event.x > mode.width-50)
-            or ((event.y < 50) or (event.y > 100)))):
+        elif (event.x < 50 or (event.x > 150 and event.x < mode.width-150) 
+            or event.x > mode.width-50 or event.y < 50 or event.y > 100):
             mode.backButtonColor = mode.nextButtonColor = mode.green
         # 'Play Sleigh 1' button toggle
         if ((mode.width/6-80 <= event.x <= mode.width/6+80) 
@@ -406,7 +411,7 @@ Grinch! (who will steal his presents)'''
             or (event.y < mode.height*9/10+40)):
             mode.mode3ButtonColor = mode.green
 
-    def mousePressed(mode, event):
+    def mouse_pressed(mode, event):
         # 'Back' button
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
             mode.app.setActiveMode(mode.app.instructionsScreen)
@@ -436,7 +441,7 @@ Grinch! (who will steal his presents)'''
             mode.app.setActiveMode(mode.app.grinchMode) 
             mode.mode3ButtonColor = mode.green
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         # background
         canvas.create_image(mode.width/2, mode.height/2, 
                             image=ImageTk.PhotoImage(mode.backgroundResized))
@@ -451,7 +456,7 @@ Grinch! (who will steal his presents)'''
         canvas.create_text(mode.width/2, mode.height/10,
                             fill=mode.titleColor,
                             text='Choose Your Sleigh', 
-                            font='Baloo 60')
+                            font=TITULO_FONTE)
         # 'Back' button
         canvas.create_rectangle(50, 50, 150, 100,
                             fill=mode.backButtonColor,
@@ -459,7 +464,7 @@ Grinch! (who will steal his presents)'''
         canvas.create_text(100, 75,
                             fill=mode.backButtonTextColor,
                             text='Back', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)
         # 'Home' button
         canvas.create_rectangle(mode.width-50, 50, mode.width-150, 100,
                             fill=mode.nextButtonColor,
@@ -467,7 +472,7 @@ Grinch! (who will steal his presents)'''
         canvas.create_text(mode.width-100, 75,
                             fill=mode.nextButtonTextColor,
                             text='Home', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)
         # Sleigh 1
         canvas.create_rectangle(mode.width/6-150, mode.height/2-20, 
                             mode.width/6+130, mode.height/2+260,
@@ -480,15 +485,15 @@ Grinch! (who will steal his presents)'''
         canvas.create_text(mode.width/6, mode.height*9/10,
                             fill=mode.mode1ButtonTextColor,
                             text='Sleigh 1', 
-                            font='Baloo 30')
+                            font=TITULO_FONTE3)
         canvas.create_text(mode.width/6, mode.height/5,
                             fill='gold',
                             text=mode.mode1Title, 
-                            font='Baloo 30')
+                            font=TITULO_FONTE3)
         canvas.create_text(mode.width/6, mode.height*3/5+40,
                             fill='black',
                             text=mode.mode1Text, 
-                            font='GB18030Bitmap 11 bold')
+                            font=TITULO_FONTE4)
         canvas.create_image(mode.width/6, mode.height*2/5-25, 
                             image=ImageTk.PhotoImage(mode.sleigh1Resized))
         # Sleigh 2
@@ -503,15 +508,15 @@ Grinch! (who will steal his presents)'''
         canvas.create_text(mode.width/2, mode.height*9/10,
                             fill=mode.mode2ButtonTextColor,
                             text='Sleigh 2', 
-                            font='Baloo 30')
+                            font=TITULO_FONTE3)
         canvas.create_text(mode.width/2, mode.height/5,
                             fill='gold',
                             text=mode.mode2Title, 
-                            font='Baloo 30')
+                            font=TITULO_FONTE3)
         canvas.create_text(mode.width/2, mode.height*3/5+40,
                             fill='black',
                             text=mode.mode2Text, 
-                            font='GB18030Bitmap 11 bold')
+                            font=TITULO_FONTE4)
         canvas.create_image(mode.width/2, mode.height*2/5-25, 
                             image=ImageTk.PhotoImage(mode.sleigh2Resized))
         # Sleigh 3
@@ -526,20 +531,20 @@ Grinch! (who will steal his presents)'''
         canvas.create_text(mode.width*5/6, mode.height*9/10,
                             fill=mode.mode3ButtonTextColor,
                             text='Sleigh 3', 
-                            font='Baloo 30')
+                            font=TITULO_FONTE3)
         canvas.create_text(mode.width*5/6, mode.height/5,
                             fill='gold',
                             text=mode.mode3Title, 
-                            font='Baloo 30')
+                            font=TITULO_FONTE3)
         canvas.create_text(mode.width*5/6, mode.height*3/5+40,
                             fill='black',
                             text=mode.mode3Text, 
-                            font='GB18030Bitmap 11 bold')
+                            font=TITULO_FONTE4)
         canvas.create_image(mode.width*5/6, mode.height*2/5-25, 
                             image=ImageTk.PhotoImage(mode.sleigh3Resized))
 
 class FinalScreen(SleighScreen):
-    def appStarted(mode):
+    def app_started(mode):
         mode.snow = []
         mode.snowR = 20
         mode.count = 0
@@ -550,10 +555,10 @@ class FinalScreen(SleighScreen):
         mode.playAgainButtonTextColor = 'white'
         mode.homeButtonColor = mode.green
         mode.homeButtonTextColor = 'white'
-        mode.background = mode.loadImage('background.png')
+        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
         mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
 
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
             randomX = random.randrange(mode.width)
@@ -563,7 +568,7 @@ class FinalScreen(SleighScreen):
         for snowball in mode.snow:
             snowball.fall()
 
-    def mouseMoved(mode, event):
+    def mouse_moved(mode, event):
         if ((mode.width/2-200 <= event.x <= mode.width/2+200) 
             and (mode.height*7/10-50 <= event.y <= mode.height*7/10+50)):
             mode.playAgainButtonColor = mode.darkGreen
@@ -579,7 +584,7 @@ class FinalScreen(SleighScreen):
             or (event.y > mode.height*9/10+25)):
             mode.homeButtonColor = mode.green
 
-    def mousePressed(mode, event):
+    def mouse_pressed(mode, event):
         # 'Play Again' button
         if ((mode.width/2-200 <= event.x <= mode.width/2+200) 
             and (mode.height*7/10-50 <= event.y <= mode.height*7/10+50)):
@@ -593,7 +598,7 @@ class FinalScreen(SleighScreen):
             mode.app.setActiveMode(mode.app.titleScreen)
             mode.homeButtonColor = mode.green
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         # background
         canvas.create_image(mode.width/2, mode.height/2, 
                             image=ImageTk.PhotoImage(mode.backgroundResized))
@@ -630,4 +635,4 @@ class FinalScreen(SleighScreen):
         canvas.create_text(mode.width/2, mode.height*9/10,
                             fill=mode.homeButtonTextColor,
                             text='Home', 
-                            font='Baloo 20')
+                            font=TITULO_FONTE2)

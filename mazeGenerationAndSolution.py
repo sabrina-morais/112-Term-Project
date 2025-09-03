@@ -7,18 +7,18 @@
 ########################################
 import random
 
-def generateMazeDict(n):
-    mazeDict = {}
-    lastPoint = (0,0)
-    newPoint = (1,0)
-    generateMazeDictHelper(n, mazeDict, lastPoint, newPoint, 0)
-    return mazeDict
+def generate_maze_dict(n):
+    maze_dict = {}
+    last_point = (0, 0)
+    new_point = (1, 0)
+    generate_maze_dict_helper(n, maze_dict, last_point, new_point, 0)
+    return maze_dict
 
-def generateMazeDictHelper(n, mazeDict, lastPoint, newPoint, index):
+def generate_maze_dict_helper(n, mazeDict, lastPoint, newPoint, index):
     # check if newPoint valid
     newX, newY = newPoint
     if ((newX < 0) or (newX > n-1) or (newY < 0) or (newY > n-1)
-        or (isPointInDict(mazeDict, newPoint) == True) 
+        or (is_point_in_dict(mazeDict, newPoint) == True) 
         or (newPoint == (0,0))):
         return False
 
@@ -40,97 +40,74 @@ def generateMazeDictHelper(n, mazeDict, lastPoint, newPoint, index):
         nextX = newX + dx
         nextY = newY + dy
         nextPoint = (nextX, nextY)
-        if (generateMazeDictHelper(n, mazeDict, newPoint, 
+        if (generate_maze_dict_helper(n, mazeDict, newPoint, 
                                     nextPoint, index+1) == True):
             return True
     
     # if recursion doesn't work, undo move
-    return generateMazeDictHelper(n, mazeDict, lastPoint, newPoint, index)
+    return generate_maze_dict_helper(n, mazeDict, lastPoint, newPoint, index)
 
-def isPointInDict(mazeDict, point):
+def is_point_in_dict(mazeDict, point):
     for coordinate in mazeDict:
         if point in mazeDict[coordinate]:
             return True
     return False
 
-def mazeSolver(n, mazeDict, startCell, endCell):
+def maze_solver(n, mazeDict, startCell, endCell):
     flippedDict = flipMazeDict(mazeDict)
     solution = [startCell]
     lastPoint = mazeDict[startCell][0]
-    mazeSolverHelper(n, mazeDict, solution, lastPoint, endCell)
+    maze_solver_helper(n, mazeDict, solution, lastPoint, endCell)
     if (len(solution) == 1):
-        mazeSolverHelper(n, flippedDict, solution, lastPoint, endCell)
+        maze_solver_helper(n, flippedDict, solution, lastPoint, endCell)
     return flippedDict, solution
 
-def mazeSolverInTwoParts(n, mazeDict, startCell, endCell):
-    # get maze dictionary, flipped maze dictionary, and solution list from UL to BR
-    flippedDict, solution = mazeSolver(n, mazeDict, (0,0), (n-1,n-1))
-
-    # get BL cell
+def maze_solver_in_two_parts(n, mazeDict, startCell, endCell):
+    flippedDict, solution = maze_solver(n, mazeDict, (0,0), (n-1,n-1))
     intermediateCell = (n-1, n-1)
 
-    # firstSol gets from startCell to BR
-    firstSol = [startCell]
-    try:
-        firstLastPoint = mazeDict[startCell][0]
-    except:
-        for point in mazeDict:
-            if startCell in mazeDict[point]:
-                firstLastPoint = point
-    mazeSolverGivenSol(n, mazeDict, firstSol, firstLastPoint, intermediateCell, solution)
-    if (len(firstSol) == 1):
+    def getFirstConnectedCell(cell, graph):
         try:
-            firstLastPoint = flippedDict[startCell][0]
-        except:
-            for point in flippedDict:
-                if startCell in flippedDict[point]:
-                    firstLastPoint = point
-        mazeSolverGivenSol(n, flippedDict, firstSol, firstLastPoint, intermediateCell, solution)
+            return graph[cell][0]
+        except KeyError:
+            for point in graph:
+                if cell in graph[point]:
+                    return point
+        raise ValueError(f"No connected cell found for {cell} in graph")
 
-    # secondSol gets from endCell to BR
-    secondSol = [endCell]
-    try:
-        secondLastPoint = mazeDict[endCell][0]
-    except:
-        for point in mazeDict:
-            if endCell in mazeDict[point]:
-                secondLastPoint = point
-    mazeSolverGivenSol(n, mazeDict, secondSol, secondLastPoint, intermediateCell, solution)
-    if (len(secondSol) == 1):
-        try:
-            secondLastPoint = flippedDict[endCell][0]
-        except:
-            for point in flippedDict:
-                if endCell in flippedDict[point]:
-                    secondLastPoint = point
-        mazeSolverGivenSol(n, flippedDict, secondSol, secondLastPoint, intermediateCell, solution)
+    def solvePath(cell, graph, flippedGraph):
+        path = [cell]
+        lastPoint = getFirstConnectedCell(cell, graph)
+        maze_solver_given_sol(n, graph, path, lastPoint, intermediateCell, solution)
+        if len(path) == 1:
+            lastPoint = getFirstConnectedCell(cell, flippedGraph)
+            maze_solver_given_sol(n, flippedGraph, path, lastPoint, intermediateCell, solution)
+        return path
 
-    # combine firstSol and secondSol to get finalSol
+    firstSol = solvePath(startCell, mazeDict, flippedDict)
+    secondSol = solvePath(endCell, mazeDict, flippedDict)
+
+    # Combine the two paths
     finalSol = []
-    for i in range(len(firstSol)):
-        for j in range(len(secondSol)):
-            if (firstSol[i] == secondSol[j]):
-                firstHalf = firstSol[:i]
-                secondHalf = secondSol[:j+1]
-                secondHalf.reverse()
-                finalSol.extend(firstHalf)
-                finalSol.extend(secondHalf)
-                break
-        if len(finalSol) != 0:
+    for i, f in enumerate(firstSol):
+        if f in secondSol:
+            j = secondSol.index(f)
+            finalSol.extend(firstSol[:i])
+            secondPart = secondSol[:j+1]
+            secondPart.reverse()
+            finalSol.extend(secondPart)
             break
 
-    # get rid of extras at end of finalSol
-    for i in range(len(finalSol)):
-        if (finalSol[i] == endCell):
-            if (i == len(finalSol)-1):
-                break
-            finalSol = finalSol[:i+1]
-            break
+    # Trim extra points beyond endCell
+    if endCell in finalSol:
+        idx = finalSol.index(endCell)
+        finalSol = finalSol[:idx+1]
 
     return finalSol
 
-def mazeSolverHelper(n, mazeDict, solution, lastPoint, endCell):
-    lastX, lastY = lastPoint
+
+def maze_solver_helper(n, mazeDict, solution, lastPoint, endCell):
+    _ , _ = lastPoint
 
     # set lastPoint
     solution.append(lastPoint)
@@ -146,15 +123,15 @@ def mazeSolverHelper(n, mazeDict, solution, lastPoint, endCell):
     
     # recurse 
     for connection in mazeDict[lastPoint]:
-        if mazeSolverHelper(n, mazeDict, solution, connection, endCell) == True:
+        if maze_solver_helper(n, mazeDict, solution, connection, endCell) == True:
             return True
 
     # if recursion doesn't work
     solution.pop()
     return False
 
-def mazeSolverGivenSol(n, dictionary, solution, lastPoint, endCell, givenSol):
-    lastX, lastY = lastPoint
+def maze_solver_given_sol(n, dictionary, solution, lastPoint, endCell, givenSol):
+    _ , _ = lastPoint
 
     # set lastPoint
     solution.append(lastPoint)
@@ -172,16 +149,16 @@ def mazeSolverGivenSol(n, dictionary, solution, lastPoint, endCell, givenSol):
     
     # recurse 
     for connection in dictionary[lastPoint]:
-        if mazeSolverGivenSol(n, dictionary, solution, connection, givenSol, endCell) == True:
+        if maze_solver_given_sol(n, dictionary, solution, connection, givenSol, endCell) == True:
             return True
 
     # if recursion doesn't work
     solution.pop()
     return False
 
-def getMazeSolutionConnections(n, mazeDict, startCell, endCell):
-    solution = mazeSolverInTwoParts(n, mazeDict, startCell, endCell)
-    connDict = dict()
+def get_maze_solution_connections(n, mazeDict, startCell, endCell):
+    solution = maze_solver_in_two_parts(n, mazeDict, startCell, endCell)
+    connDict = {}
 
     # create dictionary of all coordinates
     for x in range(n):
@@ -197,7 +174,7 @@ def getMazeSolutionConnections(n, mazeDict, startCell, endCell):
     return solution, connDict
 
 def flipMazeDict(mazeDict):
-    flippedDict = dict()
+    flippedDict = {}
 
     for key in mazeDict:
         for point in mazeDict[key]:

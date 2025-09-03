@@ -7,17 +7,17 @@ from cmu_112_graphics import App, getHash, WrappedCanvas
 
 # ---------------- UNITÁRIOS ----------------
 
-def test_getHash_equal_dicts():
+def test_get_hash_equal_dicts():
     d1 = {"a": 1, "b": [1,2]}
     d2 = {"b": [1,2], "a": 1}
     assert getHash(d1) == getHash(d2)
 
-def test_getHash_different_values():
+def test_get_hash_different_values():
     d1 = {"a": 1}
     d2 = {"a": 2}
     assert getHash(d1) != getHash(d2)
 
-def test_scaleImage_size_change():
+def test_scale_image_size_change():
     from PIL import Image
     app = App(autorun=False)
     img = Image.new("RGB", (10, 10), "red")
@@ -34,8 +34,8 @@ class DummyEvent:
         self.keysym = keysym
         self.char = char
 
+def test_timer_fired_wrapper_runs():
 
-def test_timerFiredWrapper_runs():
     called = {}
     class MyApp(App):
         def timerFired(self): called["ok"] = True

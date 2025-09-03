@@ -15,12 +15,14 @@ from mazeGenerationAndSolution import *
 from cmu_112_graphics import *
 import random
 
+TITULO_FONTE = 'Baloo 40'
+
 class Maze(Mode):
-    def appStarted(mode):
+    def app_started(mode):
         # maze display
         mode.n = 10 # 38+ has MVC Violation
-        mode.mazeDict = generateMazeDict(mode.n)
-        mode.solution, mode.connDict = getMazeSolutionConnections(mode.n, mode.mazeDict, (0,0), (mode.n-1,mode.n-1))
+        mode.mazeDict = generate_maze_dict(mode.n)
+        mode.solution, mode.connDict = get_maze_solution_connections(mode.n, mode.mazeDict, (0,0), (mode.n-1,mode.n-1))
         mode.cellWidth = mode.width / mode.n
         mode.cellHeight = mode.height / mode.n
         mode.lineWidth = mode.height / (mode.n * 10)
@@ -68,8 +70,8 @@ class Maze(Mode):
         
     def restartMaze(mode):
         # maze display
-        mode.mazeDict = generateMazeDict(mode.n)
-        mode.solution, mode.connDict = getMazeSolutionConnections(mode.n, mode.mazeDict, (0,0), (mode.n-1,mode.n-1))
+        mode.mazeDict = generate_maze_dict(mode.n)
+        mode.solution, mode.connDict = get_maze_solution_connections(mode.n, mode.mazeDict, (0,0), (mode.n-1,mode.n-1))
         mode.cellWidth = mode.width / mode.n
         mode.cellHeight = mode.height / mode.n
         mode.lineWidth = mode.height / (mode.n * 10)
@@ -113,10 +115,10 @@ class Maze(Mode):
         mode.northPoleResized = mode.scaleImage(mode.northPole, mode.cellWidth / 2500)
         mode.chimneyResized = mode.scaleImage(mode.chimney, mode.cellWidth / 2000)
 
-    def timerFired(mode):
+    def timer_fired(mode):
         GrinchMode.checkSleighGrinchIntersect(mode)
 
-    def keyPressed(mode, event):
+    def key_pressed(mode, event):
         if (event.key == 'Space'):
             mode.showSolution = not mode.showSolution
         elif (event.key == 'r'):
@@ -210,7 +212,6 @@ class Maze(Mode):
 
         # cell that center, top, bottom, left, and right of dot is in
         centerX, centerY = Maze.getCell(mode, cx, cy)
-        cellOfCenter = (centerX, centerY)
         aboveX, aboveY = Maze.getCell(mode, midX, doty0)
         cellOfTop = (aboveX, aboveY)
         belowX, belowY = Maze.getCell(mode, midX, doty1)
@@ -312,7 +313,7 @@ class Maze(Mode):
         y2 = y * mode.cellHeight + mode.cellHeight
         canvas.create_rectangle(x1, y1, x2, y2, fill='yellow', outline='')
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         canvas.create_rectangle(0, 0, mode.width, mode.height, fill='aliceblue')
 
         if (mode.showSolution == True):
@@ -356,7 +357,7 @@ class Maze(Mode):
                         image=ImageTk.PhotoImage(mode.chimneyResized))
 
 class RadiusMode(Maze):
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.app.timeSec += 0.03
         if (mode.app.timeSec >= 60):
             mode.app.timeMin += 1
@@ -364,7 +365,7 @@ class RadiusMode(Maze):
                 mode.app.presents -= 10
         mode.app.timeSec %= 60
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         canvas.create_rectangle(0, 0, mode.width, mode.height, fill='black')
         canvas.create_oval(mode.dotX - mode.dotR * mode.visibilityR, 
                         mode.dotY - mode.dotR * mode.visibilityR,
@@ -402,11 +403,11 @@ class RadiusMode(Maze):
         canvas.create_text(mode.width - 20, 20, fill='green', 
                         text=f'Time: {mode.app.timeMin}m {int(mode.app.timeSec)}s',
                         anchor='ne',
-                        font='Baloo 40')
+                        font=TITULO_FONTE)
         canvas.create_text(mode.width - 20, 60, fill='green', 
                         text=f'Presents: {mode.app.presents}',
                         anchor='ne',
-                        font='Baloo 40')
+                        font=TITULO_FONTE)
 
         # north pole, chimney
         canvas.create_image(mode.cellWidth / 2, mode.cellHeight / 2, 
@@ -416,7 +417,7 @@ class RadiusMode(Maze):
                         image=ImageTk.PhotoImage(mode.chimneyResized))
 
 class GrinchMode(Maze):
-    def timerFired(mode):
+    def timer_fired(mode):
         mode.app.timeSec += 0.03
         if (mode.app.timeSec >= 60):
             mode.app.timeMin += 1
@@ -447,16 +448,16 @@ class GrinchMode(Maze):
     def moveGrinch(mode):
         sleighX, sleighY = Maze.getCell(mode, mode.dotX, mode.dotY)
         grinchCellX, grinchCellY = Maze.getCell(mode, mode.grinchX, mode.grinchY)
-        grinchR, grinchB = Maze.getCell(mode, mode.grinchX + mode.grinchR, mode.grinchY + mode.grinchR)
-        grinchL, grinchT = Maze.getCell(mode, mode.grinchX - mode.grinchR, mode.grinchY - mode.grinchR)
-        grinchSol, grinchConn = getMazeSolutionConnections(mode.n, mode.mazeDict, (grinchCellX, grinchCellY), (sleighX, sleighY))
+        _ , _ = Maze.getCell(mode, mode.grinchX + mode.grinchR, mode.grinchY + mode.grinchR)
+        _ , _ = Maze.getCell(mode, mode.grinchX - mode.grinchR, mode.grinchY - mode.grinchR)
+        grinchSol, _ = get_maze_solution_connections(mode.n, mode.mazeDict, (grinchCellX, grinchCellY), (sleighX, sleighY))
         try:
             if (len(grinchSol) >= 5) and (grinchSol[0] == grinchSol[3]):
                 newCellX, newCellY = grinchSol[4]
             else:
                 newCellX, newCellY = grinchSol[1]
-        except:
-            newCellX, newCellY = grinchSol[0]
+        except IndexError:
+            newCellX, newCellY = grinchCellX, grinchCellY
 
         # find coordinates of grinchCellX, grinchCellY, newCellX, newCellY
         grinchCellXCoord = grinchCellX * mode.cellWidth + mode.cellWidth / 2
@@ -496,7 +497,7 @@ class GrinchMode(Maze):
         elif (mode.grinchY < y):
             mode.grinchY += 1
 
-    def redrawAll(mode, canvas):
+    def redraw_all(mode, canvas):
         canvas.create_rectangle(0, 0, mode.width, mode.height, fill='aliceblue')
 
         if (mode.showSolution == True):
@@ -547,11 +548,11 @@ class GrinchMode(Maze):
         canvas.create_text(mode.width - 20, 20, fill='green', 
                         text=f'Time: {mode.app.timeMin}m {int(mode.app.timeSec)}s',
                         anchor='ne',
-                        font='Baloo 40')
+                        font=TITULO_FONTE)
         canvas.create_text(mode.width - 20, 60, fill='green', 
                         text=f'Presents: {int(mode.app.presents)}',
                         anchor='ne',
-                        font='Baloo 40')
+                        font=TITULO_FONTE)
 
         # north pole, chimney
         canvas.create_image(mode.cellWidth / 2, mode.cellHeight / 2, 
