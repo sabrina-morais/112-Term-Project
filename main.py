@@ -15,29 +15,29 @@ from gameScreens import *
 from mazeModes import *
 
 class MyApp(ModalApp):
-    def app_started(app):
+    def app_started(self):
         # from gameScreens
-        app.titleScreen = TitleScreen()
-        app.backgroundScreen = BackgroundScreen()
-        app.instructionsScreen = InstructionsScreen()
-        app.sleighScreen = SleighScreen()
-        app.finalScreen = FinalScreen()
+        self.titleScreen = TitleScreen()
+        self.backgroundScreen = BackgroundScreen()
+        self.instructionsScreen = InstructionsScreen()
+        self.sleighScreen = SleighScreen()
+        self.finalScreen = FinalScreen()
 
         # from mazeModes
-        app.maze = Maze()
-        app.radiusMode = RadiusMode()
-        app.grinchMode = GrinchMode()
-        app.presents = 100
-        app.finalPresents = 100
-        app.timeSec = 0
-        app.timeMin = 0
+        self.maze = Maze()
+        self.radiusMode = RadiusMode()
+        self.grinchMode = GrinchMode()
+        self.presents = 100
+        self.finalPresents = 100
+        self.timeSec = 0
+        self.timeMin = 0
 
-        app.timerMode = True
-        app.timerDelay = 10
+        self.timerMode = True
+        self.timer_delay = 10
 
-        app.setActiveMode(app.titleScreen)
+        self.set_active_mode(self.titleScreen)
 
-    def timer_fired(app):
-        app._activeMode.timer_fired()
+    def timer_fired(self):
+        self._active_mode.timer_fired()
 
 MyApp(width=1000, height=800)

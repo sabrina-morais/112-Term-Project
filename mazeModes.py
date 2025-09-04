@@ -18,545 +18,545 @@ import random
 TITULO_FONTE = 'Baloo 40'
 
 class Maze(Mode):
-    def app_started(mode):
+    def app_started(self):
         # maze display
-        mode.n = 10 # 38+ has MVC Violation
-        mode.mazeDict = generate_maze_dict(mode.n)
-        mode.solution, mode.connDict = get_maze_solution_connections(mode.n, mode.mazeDict, (0,0), (mode.n-1,mode.n-1))
-        mode.cellWidth = mode.width / mode.n
-        mode.cellHeight = mode.height / mode.n
-        mode.lineWidth = mode.height / (mode.n * 10)
-        mode.lineMargin = mode.lineWidth * 2 / 5
-        mode.showSolution = False
-        mode.visibilityR = 17
-        mode.mazeFontSize = int(min(mode.cellWidth, mode.cellHeight) / 3)
+        self.n = 10 # 38+ has MVC Violation
+        self.mazeDict = generate_maze_dict(self.n)
+        self.solution, self.connDict = get_maze_solution_connections(self.n, self.mazeDict, (0,0), (self.n-1,self.n-1))
+        self.cellWidth = self.width / self.n
+        self.cellHeight = self.height / self.n
+        self.lineWidth = self.height / (self.n * 10)
+        self.lineMargin = self.lineWidth * 2 / 5
+        self.showSolution = False
+        self.visibilityR = 17
+        self.mazeFontSize = int(min(self.cellWidth, self.cellHeight) / 3)
 
         # presents and candycane
-        mode.presentsGathered = False
-        mode.presentsCellX = random.randrange(mode.n)
-        mode.presentsCellY = random.randrange(mode.n)
-        mode.presents = mode.loadImage('presents.png')
-        mode.presentsResized = mode.scaleImage(mode.presents, mode.cellWidth / 2000)
-        mode.candycaneCellX = random.randrange(mode.n)
-        mode.candycaneCellY = random.randrange(mode.n)
-        mode.candycane = mode.loadImage('candycane.png')
-        mode.candycaneResized = mode.scaleImage(mode.candycane, mode.cellWidth / 2000)
+        self.presentsGathered = False
+        self.presentsCellX = random.randrange(self.n)
+        self.presentsCellY = random.randrange(self.n)
+        self.presents = self.load_image('presents.png')
+        self.presentsResized = self.scale_image(self.presents, self.cellWidth / 2000)
+        self.candycaneCellX = random.randrange(self.n)
+        self.candycaneCellY = random.randrange(self.n)
+        self.candycane = self.load_image('candycane.png')
+        self.candycaneResized = self.scale_image(self.candycane, self.cellWidth / 2000)
 
         # sleigh
-        mode.dotX = mode.cellWidth + mode.cellWidth / 2
-        mode.dotY = mode.cellHeight / 2
-        mode.dotR = min(mode.cellWidth, mode.cellHeight) / 10
-        mode.dotStepSize = mode.dotR / 2
-        mode.sleigh1 = mode.loadImage('sleigh1.png')
-        mode.sleigh1Resized = mode.scaleImage(mode.sleigh1, mode.cellWidth / 2000)
-        mode.sleigh2 = mode.loadImage('sleigh2.png')
-        mode.sleigh2Resized = mode.scaleImage(mode.sleigh2, mode.cellWidth / 2000)
-        mode.sleigh3 = mode.loadImage('sleigh3.png')
-        mode.sleigh3Resized = mode.scaleImage(mode.sleigh3, mode.cellWidth / 2000)
+        self.dotX = self.cellWidth + self.cellWidth / 2
+        self.dotY = self.cellHeight / 2
+        self.dotR = min(self.cellWidth, self.cellHeight) / 10
+        self.dotStepSize = self.dotR / 2
+        self.sleigh1 = self.load_image('sleigh1.png')
+        self.sleigh1Resized = self.scale_image(self.sleigh1, self.cellWidth / 2000)
+        self.sleigh2 = self.load_image('sleigh2.png')
+        self.sleigh2Resized = self.scale_image(self.sleigh2, self.cellWidth / 2000)
+        self.sleigh3 = self.load_image('sleigh3.png')
+        self.sleigh3Resized = self.scale_image(self.sleigh3, self.cellWidth / 2000)
 
         # grinch
-        mode.grinchX = mode.width - mode.cellWidth / 2
-        mode.grinchY = mode.cellHeight / 2
-        mode.grinchR = min(mode.cellWidth, mode.cellHeight) / 10
-        mode.grinch = mode.loadImage('grinch.png')
-        mode.grinchResized = mode.scaleImage(mode.grinch, mode.cellWidth / 2000)
-        mode.canGrinchMove = True
+        self.grinch_x = self.width - self.cellWidth / 2
+        self.grinch_y = self.cellHeight / 2
+        self.grinchR = min(self.cellWidth, self.cellHeight) / 10
+        self.grinch = self.load_image('grinch.png')
+        self.grinchResized = self.scale_image(self.grinch, self.cellWidth / 2000)
+        self.canGrinchMove = True
 
         # north pole and chimney
-        mode.northPole = mode.loadImage('northPole.png')
-        mode.northPoleResized = mode.scaleImage(mode.northPole, mode.cellWidth / 2500)
-        mode.chimney = mode.loadImage('chimney.png')
-        mode.chimneyResized = mode.scaleImage(mode.chimney, mode.cellWidth / 2000)
+        self.northPole = self.load_image('northPole.png')
+        self.northPoleResized = self.scale_image(self.northPole, self.cellWidth / 2500)
+        self.chimney = self.load_image('chimney.png')
+        self.chimneyResized = self.scale_image(self.chimney, self.cellWidth / 2000)
         
-    def restartMaze(mode):
+    def restartMaze(self):
         # maze display
-        mode.mazeDict = generate_maze_dict(mode.n)
-        mode.solution, mode.connDict = get_maze_solution_connections(mode.n, mode.mazeDict, (0,0), (mode.n-1,mode.n-1))
-        mode.cellWidth = mode.width / mode.n
-        mode.cellHeight = mode.height / mode.n
-        mode.lineWidth = mode.height / (mode.n * 10)
-        mode.lineMargin = mode.lineWidth * 2 / 5
-        mode.showSolution = False
-        mode.visibilityR = 17
-        mode.mazeFontSize = int(min(mode.cellWidth, mode.cellHeight) / 3)
-        mode.app.timeMin = 0
-        mode.app.timeSec = 0
-        if (mode.app._activeMode == mode.app.maze):
-            mode.app.presents = 0
+        self.mazeDict = generate_maze_dict(self.n)
+        self.solution, self.connDict = get_maze_solution_connections(self.n, self.mazeDict, (0,0), (self.n-1,self.n-1))
+        self.cellWidth = self.width / self.n
+        self.cellHeight = self.height / self.n
+        self.lineWidth = self.height / (self.n * 10)
+        self.lineMargin = self.lineWidth * 2 / 5
+        self.showSolution = False
+        self.visibilityR = 17
+        self.mazeFontSize = int(min(self.cellWidth, self.cellHeight) / 3)
+        self.app.timeMin = 0
+        self.app.timeSec = 0
+        if (self.app._active_mode == self.app.maze):
+            self.app.presents = 0
         else:
-            mode.app.presents = 100
+            self.app.presents = 100
 
         # presents and candycane
-        mode.presentsGathered = False
-        mode.presentsCellX = random.randrange(mode.n)
-        mode.presentsCellY = random.randrange(mode.n)
-        mode.presentsResized = mode.scaleImage(mode.presents, mode.cellWidth / 2000)
-        mode.candycaneCellX = random.randrange(mode.n)
-        mode.candycaneCellY = random.randrange(mode.n)
-        mode.candycaneResized = mode.scaleImage(mode.candycane, mode.cellWidth / 2000)
+        self.presentsGathered = False
+        self.presentsCellX = random.randrange(self.n)
+        self.presentsCellY = random.randrange(self.n)
+        self.presentsResized = self.scale_image(self.presents, self.cellWidth / 2000)
+        self.candycaneCellX = random.randrange(self.n)
+        self.candycaneCellY = random.randrange(self.n)
+        self.candycaneResized = self.scale_image(self.candycane, self.cellWidth / 2000)
 
         # sleigh
-        mode.dotX = mode.cellWidth + mode.cellWidth / 2
-        mode.dotY = mode.cellHeight / 2
-        mode.dotR = min(mode.cellWidth, mode.cellHeight) / 10
-        mode.dotStepSize = mode.dotR / 2
-        mode.sleigh1Resized = mode.scaleImage(mode.sleigh1, mode.cellWidth / 2000)
-        mode.sleigh2Resized = mode.scaleImage(mode.sleigh2, mode.cellWidth / 2000)
-        mode.sleigh3Resized = mode.scaleImage(mode.sleigh3, mode.cellWidth / 2000)
+        self.dotX = self.cellWidth + self.cellWidth / 2
+        self.dotY = self.cellHeight / 2
+        self.dotR = min(self.cellWidth, self.cellHeight) / 10
+        self.dotStepSize = self.dotR / 2
+        self.sleigh1Resized = self.scale_image(self.sleigh1, self.cellWidth / 2000)
+        self.sleigh2Resized = self.scale_image(self.sleigh2, self.cellWidth / 2000)
+        self.sleigh3Resized = self.scale_image(self.sleigh3, self.cellWidth / 2000)
 
         # grinch
-        mode.grinchX = mode.width - mode.cellWidth / 2
-        mode.grinchY = mode.cellHeight / 2
-        mode.grinchR = min(mode.cellWidth, mode.cellHeight) / 3
-        mode.grinchResized = mode.scaleImage(mode.grinch, mode.cellWidth / 2000)
-        mode.canGrinchMove = True
+        self.grinch_x = self.width - self.cellWidth / 2
+        self.grinch_y = self.cellHeight / 2
+        self.grinchR = min(self.cellWidth, self.cellHeight) / 3
+        self.grinchResized = self.scale_image(self.grinch, self.cellWidth / 2000)
+        self.canGrinchMove = True
 
         # north pole and chimney
-        mode.northPoleResized = mode.scaleImage(mode.northPole, mode.cellWidth / 2500)
-        mode.chimneyResized = mode.scaleImage(mode.chimney, mode.cellWidth / 2000)
+        self.northPoleResized = self.scale_image(self.northPole, self.cellWidth / 2500)
+        self.chimneyResized = self.scale_image(self.chimney, self.cellWidth / 2000)
 
-    def timer_fired(mode):
-        GrinchMode.checkSleighGrinchIntersect(mode)
+    def timer_fired(self):
+        GrinchMode.checkSleighGrinchIntersect(self)
 
-    def key_pressed(mode, event):
+    def key_pressed(self, event):
         if (event.key == 'Space'):
-            mode.showSolution = not mode.showSolution
+            self.showSolution = not self.showSolution
         elif (event.key == 'r'):
-            Maze.restartMaze(mode)
+            Maze.restartMaze(self)
         elif (event.key == 'Up'):
-            possibleMoves = Maze.getPossibleMoves(mode)
-            if (mode.dotY > mode.dotStepSize) and ('Up' in possibleMoves):
-                mode.dotY -= mode.dotStepSize
-                Maze.checkIfMazeSolved(mode)
+            possible_moves = Maze.getPossibleMoves(self)
+            if (self.dotY > self.dotStepSize) and ('Up' in possible_moves):
+                self.dotY -= self.dotStepSize
+                Maze.checkIfMazeSolved(self)
         elif (event.key == 'Down'):
-            possibleMoves = Maze.getPossibleMoves(mode)
-            if ((mode.dotY < mode.height - mode.dotStepSize) 
-                and ('Down' in possibleMoves)):
-                mode.dotY += mode.dotStepSize
-                Maze.checkIfMazeSolved(mode)
+            possible_moves = Maze.getPossibleMoves(self)
+            if ((self.dotY < self.height - self.dotStepSize) 
+                and ('Down' in possible_moves)):
+                self.dotY += self.dotStepSize
+                Maze.checkIfMazeSolved(self)
         elif (event.key == 'Left'):
-            possibleMoves = Maze.getPossibleMoves(mode)
-            if (mode.dotX > mode.dotStepSize) and ('Left' in possibleMoves):
-                mode.dotX -= mode.dotStepSize
-                Maze.checkIfMazeSolved(mode)
+            possible_moves = Maze.getPossibleMoves(self)
+            if (self.dotX > self.dotStepSize) and ('Left' in possible_moves):
+                self.dotX -= self.dotStepSize
+                Maze.checkIfMazeSolved(self)
         elif (event.key == 'Right'):
-            possibleMoves = Maze.getPossibleMoves(mode)
-            if ((mode.dotX < mode.width - mode.dotStepSize) 
-                and ('Right' in possibleMoves)):
-                mode.dotX += mode.dotStepSize
-                Maze.checkIfMazeSolved(mode)
+            possible_moves = Maze.getPossibleMoves(self)
+            if ((self.dotX < self.width - self.dotStepSize) 
+                and ('Right' in possible_moves)):
+                self.dotX += self.dotStepSize
+                Maze.checkIfMazeSolved(self)
         elif (event.key == 'b'):
-            mode.visibilityR += 3
+            self.visibilityR += 3
         elif (event.key == 's'):
-            if (mode.visibilityR > 0):
-                mode.visibilityR -= 3
+            if (self.visibilityR > 0):
+                self.visibilityR -= 3
         elif (event.key == 'e'):
-            Maze.resetTimer(mode)
-            mode.app.finalPresents = mode.app.presents
-            Maze.restartMaze(mode)
-            mode.app.setActiveMode(mode.app.finalScreen)
+            Maze.resetTimer(self)
+            self.app.finalPresents = self.app.presents
+            Maze.restartMaze(self)
+            self.app.set_active_mode(self.app.finalScreen)
         elif (event.key == '1'):
-            mode.n = 5
-            Maze.restartMaze(mode)
+            self.n = 5
+            Maze.restartMaze(self)
         elif (event.key == '2'):
-            mode.n = 10
-            Maze.restartMaze(mode)
+            self.n = 10
+            Maze.restartMaze(self)
         elif (event.key == '3'):
-            mode.n = 15
-            Maze.restartMaze(mode)
+            self.n = 15
+            Maze.restartMaze(self)
         elif (event.key == '4'):
-            mode.n = 20
-            Maze.restartMaze(mode)
+            self.n = 20
+            Maze.restartMaze(self)
         elif (event.key == '5'):
-            mode.n = 25
-            Maze.restartMaze(mode)
+            self.n = 25
+            Maze.restartMaze(self)
         elif (event.key == '6'):
-            mode.n = 30
-            Maze.restartMaze(mode)
+            self.n = 30
+            Maze.restartMaze(self)
         elif (event.key == '7'):
-            mode.n = 35
-            Maze.restartMaze(mode)
+            self.n = 35
+            Maze.restartMaze(self)
         elif (event.key == '8'):
-            Maze.restartMaze(mode)
-            mode.app.setActiveMode(mode.app.maze)
+            Maze.restartMaze(self)
+            self.app.set_active_mode(self.app.maze)
         elif (event.key == '9'):
-            Maze.restartMaze(mode)
-            mode.app.timerMode = True
-            mode.app.setActiveMode(mode.app.radiusMode)
+            Maze.restartMaze(self)
+            self.app.timerMode = True
+            self.app.set_active_mode(self.app.radiusMode)
         elif (event.key == '0'):
-            Maze.restartMaze(mode)
-            mode.app.timerMode = True
-            mode.app.setActiveMode(mode.app.grinchMode)
+            Maze.restartMaze(self)
+            self.app.timerMode = True
+            self.app.set_active_mode(self.app.grinchMode)
 
-    def checkIfMazeSolved(mode):
-        cellX, cellY = Maze.getCell(mode, mode.dotX, mode.dotY)
-        if ((cellX, cellY) == (mode.n - 1, mode.n - 1)):
-            Maze.resetTimer(mode)
-            mode.app.finalPresents = mode.app.presents
-            Maze.restartMaze(mode)
-            mode.app.setActiveMode(mode.app.finalScreen)
+    def checkIfMazeSolved(self):
+        cell_x, cell_y = Maze.getCell(self, self.dotX, self.dotY)
+        if ((cell_x, cell_y) == (self.n - 1, self.n - 1)):
+            Maze.resetTimer(self)
+            self.app.finalPresents = self.app.presents
+            Maze.restartMaze(self)
+            self.app.set_active_mode(self.app.finalScreen)
 
-    def resetTimer(mode):
-        mode.app.timerMode = False
-        mode.app.timeSec = 0
-        mode.app.timeMin = 0
+    def resetTimer(self):
+        self.app.timerMode = False
+        self.app.timeSec = 0
+        self.app.timeMin = 0
     
-    def getPossibleMoves(mode):
+    def getPossibleMoves(self):
         # center and radius of dot
-        cx, cy, r = mode.dotX, mode.dotY, mode.dotR
+        cx, cy, r = self.dotX, self.dotY, self.dotR
         
         # left, right, top, and bottom of dot
         dotx0, dotx1, doty0, doty1 = cx-r, cx+r, cy-r, cy+r
-        midX = (dotx0 + dotx1) / 2
-        midY = (doty0 + doty1) / 2
+        mid_x = (dotx0 + dotx1) / 2
+        mid_y = (doty0 + doty1) / 2
 
         # cell that center, top, bottom, left, and right of dot is in
-        centerX, centerY = Maze.getCell(mode, cx, cy)
-        aboveX, aboveY = Maze.getCell(mode, midX, doty0)
-        cellOfTop = (aboveX, aboveY)
-        belowX, belowY = Maze.getCell(mode, midX, doty1)
-        cellOfBottom = (belowX, belowY)
-        leftX, leftY = Maze.getCell(mode, dotx0, midY)
-        cellOfLeft = (leftX, leftY)
-        rightX, rightY = Maze.getCell(mode, dotx1, midY)
-        cellOfRight = (rightX, rightY)
+        center_x, center_y = Maze.getCell(self, cx, cy)
+        above_x, above_y = Maze.getCell(self, mid_x, doty0)
+        cell_of_top = (above_x, above_y)
+        below_x, below_y = Maze.getCell(self, mid_x, doty1)
+        cell_of_bottom = (below_x, below_y)
+        left_x, left_y = Maze.getCell(self, dotx0, mid_y)
+        cell_of_left = (left_x, left_y)
+        right_x, right_y = Maze.getCell(self, dotx1, mid_y)
+        cell_of_right = (right_x, right_y)
 
         # bounds of cell that center of dot is in
-        centerx0, centerx1, centery0, centery1 = Maze.getCellBounds(mode, centerX, centerY)
+        centerx0, centerx1, centery0, centery1 = Maze.getCellBounds(self, center_x, center_y)
 
-        possibleMoves = set()
+        possible_moves = set()
 
         # check if dot can move within cell
-        if (doty0 - mode.dotStepSize > centery0 + (mode.lineWidth * 2 / 3)):
-            possibleMoves.add('Up')
-        if (doty1 + mode.dotStepSize < centery1 - (mode.lineWidth * 2 / 3)):
-            possibleMoves.add('Down')
-        if (dotx0 - mode.dotStepSize > centerx0 + (mode.lineWidth * 2 / 3)):
-            possibleMoves.add('Left')
-        if (dotx1 + mode.dotStepSize < centerx1 - (mode.lineWidth * 2 / 3)):
-            possibleMoves.add('Right')
+        if (doty0 - self.dotStepSize > centery0 + (self.lineWidth * 2 / 3)):
+            possible_moves.add('Up')
+        if (doty1 + self.dotStepSize < centery1 - (self.lineWidth * 2 / 3)):
+            possible_moves.add('Down')
+        if (dotx0 - self.dotStepSize > centerx0 + (self.lineWidth * 2 / 3)):
+            possible_moves.add('Left')
+        if (dotx1 + self.dotStepSize < centerx1 - (self.lineWidth * 2 / 3)):
+            possible_moves.add('Right')
 
         # cells above, below, left, and right of center cell
-        cellAbove = (centerX, centerY-1)
-        cellBelow = (centerX, centerY+1)
-        cellLeft = (centerX-1, centerY)
-        cellRight = (centerX+1, centerY)
+        cell_above = (center_x, center_y-1)
+        cell_below = (center_x, center_y+1)
+        cell_left = (center_x-1, center_y)
+        cell_right = (center_x+1, center_y)
 
         # check if dot can move to next cell
-        if ((cellAbove in mode.connDict[cellOfLeft]) 
-            and (cellAbove in mode.connDict[cellOfRight])):
-            possibleMoves.add('Up')
-        if ((cellBelow in mode.connDict[cellOfLeft]) 
-            and (cellBelow in mode.connDict[cellOfRight])):
-            possibleMoves.add('Down')
-        if ((cellLeft in mode.connDict[cellOfTop]) 
-            and (cellLeft in mode.connDict[cellOfBottom])):
-            possibleMoves.add('Left')
-        if ((cellRight in mode.connDict[cellOfTop]) 
-            and (cellRight in mode.connDict[cellOfBottom])):
-            possibleMoves.add('Right')
+        if ((cell_above in self.connDict[cell_of_left]) 
+            and (cell_above in self.connDict[cell_of_right])):
+            possible_moves.add('Up')
+        if ((cell_below in self.connDict[cell_of_left]) 
+            and (cell_below in self.connDict[cell_of_right])):
+            possible_moves.add('Down')
+        if ((cell_left in self.connDict[cell_of_top]) 
+            and (cell_left in self.connDict[cell_of_bottom])):
+            possible_moves.add('Left')
+        if ((cell_right in self.connDict[cell_of_top]) 
+            and (cell_right in self.connDict[cell_of_bottom])):
+            possible_moves.add('Right')
 
-        return possibleMoves
+        return possible_moves
 
-    def getCell(mode, cx, cy):
-        cellX = cx // mode.cellWidth
-        cellY = cy // mode.cellHeight
-        return int(cellX), int(cellY)
+    def getCell(self, cx, cy):
+        cell_x = cx // self.cellWidth
+        cell_y = cy // self.cellHeight
+        return int(cell_x), int(cell_y)
 
-    def getCellBounds(mode, x, y):
-        x0 = x * mode.cellWidth
-        x1 = x * mode.cellWidth + mode.cellWidth
-        y0 = y * mode.cellHeight
-        y1 = y * mode.cellHeight + mode.cellHeight
+    def getCellBounds(self, x, y):
+        x0 = x * self.cellWidth
+        x1 = x * self.cellWidth + self.cellWidth
+        y0 = y * self.cellHeight
+        y1 = y * self.cellHeight + self.cellHeight
         return x0, x1, y0, y1
 
-    def drawAboveLine(mode, canvas, point):
+    def drawAboveLine(self, canvas, point):
         x, y = point
-        x1 = x * mode.cellWidth - mode.lineMargin
-        x2 = x * mode.cellWidth + mode.cellWidth + mode.lineMargin
-        y1 = y * mode.cellHeight
-        canvas.create_line(x1, y1, x2, y1, width=mode.lineWidth)
+        x1 = x * self.cellWidth - self.lineMargin
+        x2 = x * self.cellWidth + self.cellWidth + self.lineMargin
+        y1 = y * self.cellHeight
+        canvas.create_line(x1, y1, x2, y1, width=self.lineWidth)
 
-    def drawBelowLine(mode, canvas, point):
+    def drawBelowLine(self, canvas, point):
         x, y = point
-        x1 = x * mode.cellWidth - mode.lineMargin
-        x2 = x * mode.cellWidth + mode.cellWidth + mode.lineMargin
-        y1 = y * mode.cellHeight + mode.cellHeight
-        canvas.create_line(x1, y1, x2, y1, width=mode.lineWidth)
+        x1 = x * self.cellWidth - self.lineMargin
+        x2 = x * self.cellWidth + self.cellWidth + self.lineMargin
+        y1 = y * self.cellHeight + self.cellHeight
+        canvas.create_line(x1, y1, x2, y1, width=self.lineWidth)
 
-    def drawLeftLine(mode, canvas, point):
+    def drawLeftLine(self, canvas, point):
         x, y = point
-        x1 = x * mode.cellWidth
-        y1 = y * mode.cellHeight - mode.lineMargin
-        y2 = y * mode.cellHeight + mode.cellHeight + mode.lineMargin
-        canvas.create_line(x1, y1, x1, y2, width=mode.lineWidth)
+        x1 = x * self.cellWidth
+        y1 = y * self.cellHeight - self.lineMargin
+        y2 = y * self.cellHeight + self.cellHeight + self.lineMargin
+        canvas.create_line(x1, y1, x1, y2, width=self.lineWidth)
 
-    def drawRightLine(mode, canvas, point):
+    def drawRightLine(self, canvas, point):
         x, y = point
-        x1 = x * mode.cellWidth + mode.cellWidth
-        y1 = y * mode.cellHeight - mode.lineMargin
-        y2 = y * mode.cellHeight + mode.cellHeight + mode.lineMargin
-        canvas.create_line(x1, y1, x1, y2, width=mode.lineWidth)
+        x1 = x * self.cellWidth + self.cellWidth
+        y1 = y * self.cellHeight - self.lineMargin
+        y2 = y * self.cellHeight + self.cellHeight + self.lineMargin
+        canvas.create_line(x1, y1, x1, y2, width=self.lineWidth)
 
-    def indicateSolution(mode, canvas, point):
+    def indicateSolution(self, canvas, point):
         x, y = point        
-        cx = x * mode.cellWidth + mode.cellWidth / 2
-        cy = y * mode.cellHeight + mode.cellHeight / 2
-        r = min(mode.cellWidth, mode.cellHeight) / 10
+        cx = x * self.cellWidth + self.cellWidth / 2
+        cy = y * self.cellHeight + self.cellHeight / 2
+        r = min(self.cellWidth, self.cellHeight) / 10
         canvas.create_oval(cx-r, cy-r, cx+r, cy+r, fill='black')
 
-    def highlight(mode, canvas, point):
+    def highlight(self, canvas, point):
         x, y = point
-        x1 = x * mode.cellWidth
-        x2 = x * mode.cellWidth + mode.cellWidth
-        y1 = y * mode.cellHeight
-        y2 = y * mode.cellHeight + mode.cellHeight
+        x1 = x * self.cellWidth
+        x2 = x * self.cellWidth + self.cellWidth
+        y1 = y * self.cellHeight
+        y2 = y * self.cellHeight + self.cellHeight
         canvas.create_rectangle(x1, y1, x2, y2, fill='yellow', outline='')
 
-    def redraw_all(mode, canvas):
-        canvas.create_rectangle(0, 0, mode.width, mode.height, fill='aliceblue')
+    def redraw_all(self, canvas):
+        canvas.create_rectangle(0, 0, self.width, self.height, fill='aliceblue')
 
-        if (mode.showSolution == True):
-            for point in mode.solution:
-                Maze.indicateSolution(mode, canvas, point)
+        if (self.showSolution == True):
+            for point in self.solution:
+                Maze.indicateSolution(self, canvas, point)
 
-        for point in mode.connDict:
+        for point in self.connDict:
             x, y = point
-            abovePoint = (x, y-1)
-            belowPoint = (x, y+1)
-            leftPoint = (x-1, y)
-            rightPoint = (x+1, y)
-            if (abovePoint not in mode.connDict[point]):
-                Maze.drawAboveLine(mode, canvas, point)
-            if (belowPoint not in mode.connDict[point]):
-                Maze.drawBelowLine(mode, canvas, point)
-            if (leftPoint not in mode.connDict[point]):
-                Maze.drawLeftLine(mode, canvas, point)
-            if (rightPoint not in mode.connDict[point]):
-                Maze.drawRightLine(mode, canvas, point)
+            above_point = (x, y-1)
+            below_point = (x, y+1)
+            left_point = (x-1, y)
+            right_point = (x+1, y)
+            if (above_point not in self.connDict[point]):
+                Maze.drawAboveLine(self, canvas, point)
+            if (below_point not in self.connDict[point]):
+                Maze.drawBelowLine(self, canvas, point)
+            if (left_point not in self.connDict[point]):
+                Maze.drawLeftLine(self, canvas, point)
+            if (right_point not in self.connDict[point]):
+                Maze.drawRightLine(self, canvas, point)
         
         # presents
-        if (mode.presentsGathered == False):
-            presentsX = mode.presentsCellX * mode.cellWidth + mode.cellWidth / 2
-            presentsY = mode.presentsCellY * mode.cellHeight + mode.cellHeight / 2
-            canvas.create_image(presentsX, presentsY, 
-                        image=ImageTk.PhotoImage(mode.presentsResized))
+        if (self.presentsGathered == False):
+            presents_x = self.presentsCellX * self.cellWidth + self.cellWidth / 2
+            presents_y = self.presentsCellY * self.cellHeight + self.cellHeight / 2
+            canvas.create_image(presents_x, presents_y, 
+                        image=ImageTk.PhotoImage(self.presentsResized))
 
         # sleigh
-        canvas.create_oval(mode.dotX - mode.dotR, mode.dotY - mode.dotR,
-                        mode.dotX + mode.dotR, mode.dotY + mode.dotR, 
+        canvas.create_oval(self.dotX - self.dotR, self.dotY - self.dotR,
+                        self.dotX + self.dotR, self.dotY + self.dotR, 
                         fill='white', outline='')
-        canvas.create_image(mode.dotX, mode.dotY, 
-                        image=ImageTk.PhotoImage(mode.sleigh1Resized))
+        canvas.create_image(self.dotX, self.dotY, 
+                        image=ImageTk.PhotoImage(self.sleigh1Resized))
 
         # north pole, chimney
-        canvas.create_image(mode.cellWidth / 2, mode.cellHeight / 2, 
-                        image=ImageTk.PhotoImage(mode.northPoleResized))
-        canvas.create_image(mode.width - mode.cellWidth / 2, 
-                        mode.height - mode.cellHeight / 2,
-                        image=ImageTk.PhotoImage(mode.chimneyResized))
+        canvas.create_image(self.cellWidth / 2, self.cellHeight / 2, 
+                        image=ImageTk.PhotoImage(self.northPoleResized))
+        canvas.create_image(self.width - self.cellWidth / 2, 
+                        self.height - self.cellHeight / 2,
+                        image=ImageTk.PhotoImage(self.chimneyResized))
 
 class RadiusMode(Maze):
-    def timer_fired(mode):
-        mode.app.timeSec += 0.03
-        if (mode.app.timeSec >= 60):
-            mode.app.timeMin += 1
-            if (mode.app.presents >= 10):
-                mode.app.presents -= 10
-        mode.app.timeSec %= 60
+    def timer_fired(self):
+        self.app.timeSec += 0.03
+        if (self.app.timeSec >= 60):
+            self.app.timeMin += 1
+            if (self.app.presents >= 10):
+                self.app.presents -= 10
+        self.app.timeSec %= 60
 
-    def redraw_all(mode, canvas):
-        canvas.create_rectangle(0, 0, mode.width, mode.height, fill='black')
-        canvas.create_oval(mode.dotX - mode.dotR * mode.visibilityR, 
-                        mode.dotY - mode.dotR * mode.visibilityR,
-                        mode.dotX + mode.dotR * mode.visibilityR, 
-                        mode.dotY + mode.dotR * mode.visibilityR, 
+    def redraw_all(self, canvas):
+        canvas.create_rectangle(0, 0, self.width, self.height, fill='black')
+        canvas.create_oval(self.dotX - self.dotR * self.visibilityR, 
+                        self.dotY - self.dotR * self.visibilityR,
+                        self.dotX + self.dotR * self.visibilityR, 
+                        self.dotY + self.dotR * self.visibilityR, 
                         fill='aliceblue')
 
-        if (mode.showSolution == True):
-            for point in mode.solution:
-                Maze.indicateSolution(mode, canvas, point)
+        if (self.showSolution == True):
+            for point in self.solution:
+                Maze.indicateSolution(self, canvas, point)
 
-        for point in mode.connDict:
+        for point in self.connDict:
             x, y = point
-            abovePoint = (x, y-1)
-            belowPoint = (x, y+1)
-            leftPoint = (x-1, y)
-            rightPoint = (x+1, y)
-            if abovePoint not in mode.connDict[point]:
-                Maze.drawAboveLine(mode, canvas, point)
-            if belowPoint not in mode.connDict[point]:
-                Maze.drawBelowLine(mode, canvas, point)
-            if leftPoint not in mode.connDict[point]:
-                Maze.drawLeftLine(mode, canvas, point)
-            if rightPoint not in mode.connDict[point]:
-                Maze.drawRightLine(mode, canvas, point)
+            above_point = (x, y-1)
+            below_point = (x, y+1)
+            left_point = (x-1, y)
+            right_point = (x+1, y)
+            if above_point not in self.connDict[point]:
+                Maze.drawAboveLine(self, canvas, point)
+            if below_point not in self.connDict[point]:
+                Maze.drawBelowLine(self, canvas, point)
+            if left_point not in self.connDict[point]:
+                Maze.drawLeftLine(self, canvas, point)
+            if right_point not in self.connDict[point]:
+                Maze.drawRightLine(self, canvas, point)
 
         # sleigh
-        canvas.create_oval(mode.dotX - mode.dotR, mode.dotY - mode.dotR,
-                        mode.dotX + mode.dotR, mode.dotY + mode.dotR, 
+        canvas.create_oval(self.dotX - self.dotR, self.dotY - self.dotR,
+                        self.dotX + self.dotR, self.dotY + self.dotR, 
                         fill='white', outline='')
-        canvas.create_image(mode.dotX, mode.dotY, 
-                        image=ImageTk.PhotoImage(mode.sleigh2Resized))
+        canvas.create_image(self.dotX, self.dotY, 
+                        image=ImageTk.PhotoImage(self.sleigh2Resized))
 
         # time, presents label
-        canvas.create_text(mode.width - 20, 20, fill='green', 
-                        text=f'Time: {mode.app.timeMin}m {int(mode.app.timeSec)}s',
+        canvas.create_text(self.width - 20, 20, fill='green', 
+                        text=f'Time: {self.app.timeMin}m {int(self.app.timeSec)}s',
                         anchor='ne',
                         font=TITULO_FONTE)
-        canvas.create_text(mode.width - 20, 60, fill='green', 
-                        text=f'Presents: {mode.app.presents}',
+        canvas.create_text(self.width - 20, 60, fill='green', 
+                        text=f'Presents: {self.app.presents}',
                         anchor='ne',
                         font=TITULO_FONTE)
 
         # north pole, chimney
-        canvas.create_image(mode.cellWidth / 2, mode.cellHeight / 2, 
-                        image=ImageTk.PhotoImage(mode.northPoleResized))
-        canvas.create_image(mode.width - mode.cellWidth / 2, 
-                        mode.height - mode.cellHeight / 2,
-                        image=ImageTk.PhotoImage(mode.chimneyResized))
+        canvas.create_image(self.cellWidth / 2, self.cellHeight / 2, 
+                        image=ImageTk.PhotoImage(self.northPoleResized))
+        canvas.create_image(self.width - self.cellWidth / 2, 
+                        self.height - self.cellHeight / 2,
+                        image=ImageTk.PhotoImage(self.chimneyResized))
 
 class GrinchMode(Maze):
-    def timer_fired(mode):
-        mode.app.timeSec += 0.03
-        if (mode.app.timeSec >= 60):
-            mode.app.timeMin += 1
-            if (mode.app.presents >= 10):
-                mode.app.presents -= 10
-        mode.app.timeSec %= 60
+    def timer_fired(self):
+        self.app.timeSec += 0.03
+        if (self.app.timeSec >= 60):
+            self.app.timeMin += 1
+            if (self.app.presents >= 10):
+                self.app.presents -= 10
+        self.app.timeSec %= 60
         
-        GrinchMode.checkSleighGrinchIntersect(mode)
-        if (mode.canGrinchMove == True):
-            GrinchMode.moveGrinch(mode)
+        GrinchMode.checkSleighGrinchIntersect(self)
+        if (self.canGrinchMove == True):
+            GrinchMode.moveGrinch(self)
 
-    def checkSleighGrinchIntersect(mode):
-        sleighX, sleighY = Maze.getCell(mode, mode.dotX, mode.dotY)
-        grinchX, grinchY = Maze.getCell(mode, mode.grinchX, mode.grinchY)
+    def checkSleighGrinchIntersect(self):
+        sleigh_x, sleigh_y = Maze.getCell(self, self.dotX, self.dotY)
+        grinch_x, grinch_y = Maze.getCell(self, self.grinch_x, self.grinch_y)
         # sleigh and grinch
-        if ((sleighX, sleighY) == (grinchX, grinchY)) and (mode.app.presents > 0):
-            mode.app.presents -= 0.1
+        if ((sleigh_x, sleigh_y) == (grinch_x, grinch_y)) and (self.app.presents > 0):
+            self.app.presents -= 0.1
         # sleigh and presents
-        if ((sleighX, sleighY) == (mode.presentsCellX, mode.presentsCellY)
-            and (mode.presentsGathered == False)):
-            mode.app.presents += 10
-            mode.presentsGathered = True
+        if ((sleigh_x, sleigh_y) == (self.presentsCellX, self.presentsCellY)
+            and (self.presentsGathered == False)):
+            self.app.presents += 10
+            self.presentsGathered = True
         # grinch and candycane
-        grinchCellX, grinchCellY = Maze.getCell(mode, mode.grinchX, mode.grinchY)
-        if ((grinchCellX, grinchCellY) == (mode.candycaneCellX, mode.candycaneCellY)):
-            mode.canGrinchMove = False
+        grinch_cell_x, grinch_cell_y = Maze.getCell(self, self.grinch_x, self.grinch_y)
+        if ((grinch_cell_x, grinch_cell_y) == (self.candycaneCellX, self.candycaneCellY)):
+            self.canGrinchMove = False
 
-    def moveGrinch(mode):
-        sleighX, sleighY = Maze.getCell(mode, mode.dotX, mode.dotY)
-        grinchCellX, grinchCellY = Maze.getCell(mode, mode.grinchX, mode.grinchY)
-        _ , _ = Maze.getCell(mode, mode.grinchX + mode.grinchR, mode.grinchY + mode.grinchR)
-        _ , _ = Maze.getCell(mode, mode.grinchX - mode.grinchR, mode.grinchY - mode.grinchR)
-        grinchSol, _ = get_maze_solution_connections(mode.n, mode.mazeDict, (grinchCellX, grinchCellY), (sleighX, sleighY))
+    def moveGrinch(self):
+        sleigh_x, sleigh_y = Maze.getCell(self, self.dotX, self.dotY)
+        grinch_cell_x, grinch_cell_y = Maze.getCell(self, self.grinch_x, self.grinch_y)
+        _ , _ = Maze.getCell(self, self.grinch_x + self.grinchR, self.grinch_y + self.grinchR)
+        _ , _ = Maze.getCell(self, self.grinch_x - self.grinchR, self.grinch_y - self.grinchR)
+        grinch_sol, _ = get_maze_solution_connections(self.n, self.mazeDict, (grinch_cell_x, grinch_cell_y), (sleigh_x, sleigh_y))
         try:
-            if (len(grinchSol) >= 5) and (grinchSol[0] == grinchSol[3]):
-                newCellX, newCellY = grinchSol[4]
+            if (len(grinch_sol) >= 5) and (grinch_sol[0] == grinch_sol[3]):
+                new_cell_x, new_cell_y = grinch_sol[4]
             else:
-                newCellX, newCellY = grinchSol[1]
+                new_cell_x, new_cell_y = grinch_sol[1]
         except IndexError:
-            newCellX, newCellY = grinchCellX, grinchCellY
+            new_cell_x, new_cell_y = grinch_cell_x, grinch_cell_y
 
-        # find coordinates of grinchCellX, grinchCellY, newCellX, newCellY
-        grinchCellXCoord = grinchCellX * mode.cellWidth + mode.cellWidth / 2
-        grinchCellYCoord = grinchCellY * mode.cellHeight + mode.cellHeight / 2
-        newCellXCoord = newCellX * mode.cellWidth + mode.cellWidth / 2
-        newCellYCoord = newCellY * mode.cellHeight + mode.cellHeight / 2
+        # find coordinates of grinch_cell_x, grinch_cell_y, new_cell_x, new_cell_y
+        grinch_cell_x_coord = grinch_cell_x * self.cellWidth + self.cellWidth / 2
+        grinch_cell_y_coord = grinch_cell_y * self.cellHeight + self.cellHeight / 2
+        new_cell_x_coord = new_cell_x * self.cellWidth + self.cellWidth / 2
+        new_cell_y_coord = new_cell_y * self.cellHeight + self.cellHeight / 2
 
         # move grinch to center of cell or to center of next cell
-        if (grinchCellX + 1 == newCellX):
-            if (grinchCellXCoord-1 < mode.grinchX <= newCellXCoord+1):
-                GrinchMode.moveGrinchTowardsPoint(mode, newCellXCoord, newCellYCoord)
+        if (grinch_cell_x + 1 == new_cell_x):
+            if (grinch_cell_x_coord-1 < self.grinch_x <= new_cell_x_coord+1):
+                GrinchMode.moveGrinchTowardsPoint(self, new_cell_x_coord, new_cell_y_coord)
             else:
-                GrinchMode.moveGrinchTowardsPoint(mode, grinchCellXCoord, grinchCellYCoord)
-        elif (grinchCellX - 1 == newCellX):
-            if (newCellXCoord-1 <= mode.grinchX < grinchCellXCoord+1):
-                GrinchMode.moveGrinchTowardsPoint(mode, newCellXCoord, newCellYCoord)
+                GrinchMode.moveGrinchTowardsPoint(self, grinch_cell_x_coord, grinch_cell_y_coord)
+        elif (grinch_cell_x - 1 == new_cell_x):
+            if (new_cell_x_coord-1 <= self.grinch_x < grinch_cell_x_coord+1):
+                GrinchMode.moveGrinchTowardsPoint(self, new_cell_x_coord, new_cell_y_coord)
             else:
-                GrinchMode.moveGrinchTowardsPoint(mode, grinchCellXCoord, grinchCellYCoord)
-        elif (grinchCellY + 1 == newCellY):
-            if (grinchCellYCoord-1 < mode.grinchY <= newCellYCoord+1):
-                GrinchMode.moveGrinchTowardsPoint(mode, newCellXCoord, newCellYCoord)
+                GrinchMode.moveGrinchTowardsPoint(self, grinch_cell_x_coord, grinch_cell_y_coord)
+        elif (grinch_cell_y + 1 == new_cell_y):
+            if (grinch_cell_y_coord-1 < self.grinch_y <= new_cell_y_coord+1):
+                GrinchMode.moveGrinchTowardsPoint(self, new_cell_x_coord, new_cell_y_coord)
             else:
-                GrinchMode.moveGrinchTowardsPoint(mode, grinchCellXCoord, grinchCellYCoord)
-        elif (grinchCellY - 1 == newCellY):
-            if (newCellYCoord-1 <= mode.grinchY < grinchCellYCoord+1):
-                GrinchMode.moveGrinchTowardsPoint(mode, newCellXCoord, newCellYCoord)
+                GrinchMode.moveGrinchTowardsPoint(self, grinch_cell_x_coord, grinch_cell_y_coord)
+        elif (grinch_cell_y - 1 == new_cell_y):
+            if (new_cell_y_coord-1 <= self.grinch_y < grinch_cell_y_coord+1):
+                GrinchMode.moveGrinchTowardsPoint(self, new_cell_x_coord, new_cell_y_coord)
             else:
-                GrinchMode.moveGrinchTowardsPoint(mode, grinchCellXCoord, grinchCellYCoord)
+                GrinchMode.moveGrinchTowardsPoint(self, grinch_cell_x_coord, grinch_cell_y_coord)
         
-    def moveGrinchTowardsPoint(mode, x, y):
-        if (mode.grinchX > x):
-            mode.grinchX -= 1
-        elif (mode.grinchX < x):
-            mode.grinchX += 1
-        if (mode.grinchY > y):
-            mode.grinchY -= 1
-        elif (mode.grinchY < y):
-            mode.grinchY += 1
+    def moveGrinchTowardsPoint(self, x, y):
+        if (self.grinch_x > x):
+            self.grinch_x -= 1
+        elif (self.grinch_x < x):
+            self.grinch_x += 1
+        if (self.grinch_y > y):
+            self.grinch_y -= 1
+        elif (self.grinch_y < y):
+            self.grinch_y += 1
 
-    def redraw_all(mode, canvas):
-        canvas.create_rectangle(0, 0, mode.width, mode.height, fill='aliceblue')
+    def redraw_all(self, canvas):
+        canvas.create_rectangle(0, 0, self.width, self.height, fill='aliceblue')
 
-        if (mode.showSolution == True):
-            for point in mode.solution:
-                Maze.indicateSolution(mode, canvas, point)
+        if (self.showSolution == True):
+            for point in self.solution:
+                Maze.indicateSolution(self, canvas, point)
 
-        for point in mode.connDict:
+        for point in self.connDict:
             x, y = point
-            abovePoint = (x, y-1)
-            belowPoint = (x, y+1)
-            leftPoint = (x-1, y)
-            rightPoint = (x+1, y)
-            if abovePoint not in mode.connDict[point]:
-                Maze.drawAboveLine(mode, canvas, point)
-            if belowPoint not in mode.connDict[point]:
-                Maze.drawBelowLine(mode, canvas, point)
-            if leftPoint not in mode.connDict[point]:
-                Maze.drawLeftLine(mode, canvas, point)
-            if rightPoint not in mode.connDict[point]:
-                Maze.drawRightLine(mode, canvas, point)
+            above_point = (x, y-1)
+            below_point = (x, y+1)
+            left_point = (x-1, y)
+            right_point = (x+1, y)
+            if above_point not in self.connDict[point]:
+                Maze.drawAboveLine(self, canvas, point)
+            if below_point not in self.connDict[point]:
+                Maze.drawBelowLine(self, canvas, point)
+            if left_point not in self.connDict[point]:
+                Maze.drawLeftLine(self, canvas, point)
+            if right_point not in self.connDict[point]:
+                Maze.drawRightLine(self, canvas, point)
         
         # presents and candycane
-        if (mode.presentsGathered == False):
-            presentsX = mode.presentsCellX * mode.cellWidth + mode.cellWidth / 2
-            presentsY = mode.presentsCellY * mode.cellHeight + mode.cellHeight / 2
-            canvas.create_image(presentsX, presentsY, 
-                        image=ImageTk.PhotoImage(mode.presentsResized))
-        candycaneX = mode.candycaneCellX * mode.cellWidth + mode.cellWidth / 2
-        candycaneY = mode.candycaneCellY * mode.cellHeight + mode.cellHeight / 2
-        canvas.create_image(candycaneX, candycaneY, 
-                        image=ImageTk.PhotoImage(mode.candycaneResized))
+        if (self.presentsGathered == False):
+            presents_x = self.presentsCellX * self.cellWidth + self.cellWidth / 2
+            presents_y = self.presentsCellY * self.cellHeight + self.cellHeight / 2
+            canvas.create_image(presents_x, presents_y, 
+                        image=ImageTk.PhotoImage(self.presentsResized))
+        candycane_x = self.candycaneCellX * self.cellWidth + self.cellWidth / 2
+        candycane_y = self.candycaneCellY * self.cellHeight + self.cellHeight / 2
+        canvas.create_image(candycane_x, candycane_y, 
+                        image=ImageTk.PhotoImage(self.candycaneResized))
 
         # sleigh
-        canvas.create_oval(mode.dotX - mode.dotR, mode.dotY - mode.dotR,
-                        mode.dotX + mode.dotR, mode.dotY + mode.dotR, 
+        canvas.create_oval(self.dotX - self.dotR, self.dotY - self.dotR,
+                        self.dotX + self.dotR, self.dotY + self.dotR, 
                         fill='white', outline='')
-        canvas.create_image(mode.dotX, mode.dotY, 
-                        image=ImageTk.PhotoImage(mode.sleigh3Resized))
+        canvas.create_image(self.dotX, self.dotY, 
+                        image=ImageTk.PhotoImage(self.sleigh3Resized))
 
         # grinch
-        canvas.create_oval(mode.grinchX - mode.grinchR, mode.grinchY - mode.grinchR,
-                        mode.grinchX + mode.grinchR, mode.grinchY + mode.grinchR,
+        canvas.create_oval(self.grinch_x - self.grinchR, self.grinch_y - self.grinchR,
+                        self.grinch_x + self.grinchR, self.grinch_y + self.grinchR,
                         fill='white', outline='')
-        canvas.create_image(mode.grinchX, mode.grinchY, 
-                        image=ImageTk.PhotoImage(mode.grinchResized))
+        canvas.create_image(self.grinch_x, self.grinch_y, 
+                        image=ImageTk.PhotoImage(self.grinchResized))
 
         # time, presents label
-        canvas.create_text(mode.width - 20, 20, fill='green', 
-                        text=f'Time: {mode.app.timeMin}m {int(mode.app.timeSec)}s',
+        canvas.create_text(self.width - 20, 20, fill='green', 
+                        text=f'Time: {self.app.timeMin}m {int(self.app.timeSec)}s',
                         anchor='ne',
                         font=TITULO_FONTE)
-        canvas.create_text(mode.width - 20, 60, fill='green', 
-                        text=f'Presents: {int(mode.app.presents)}',
+        canvas.create_text(self.width - 20, 60, fill='green', 
+                        text=f'Presents: {int(self.app.presents)}',
                         anchor='ne',
                         font=TITULO_FONTE)
 
         # north pole, chimney
-        canvas.create_image(mode.cellWidth / 2, mode.cellHeight / 2, 
-                        image=ImageTk.PhotoImage(mode.northPoleResized))
-        canvas.create_image(mode.width - mode.cellWidth / 2, 
-                        mode.height - mode.cellHeight / 2,
-                        image=ImageTk.PhotoImage(mode.chimneyResized))
+        canvas.create_image(self.cellWidth / 2, self.cellHeight / 2, 
+                        image=ImageTk.PhotoImage(self.northPoleResized))
+        canvas.create_image(self.width - self.cellWidth / 2, 
+                        self.height - self.cellHeight / 2,
+                        image=ImageTk.PhotoImage(self.chimneyResized))

@@ -32,10 +32,10 @@ class TitleScreen(Mode):
         mode.snow = []
         mode.snowR = 17
         mode.count = 0
-        mode.title = mode.loadImage('title.png')
-        mode.titleResized = mode.scaleImage(mode.title, 0.4)
-        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
+        mode.title = mode.load_image('title.png')
+        mode.titleResized = mode.scale_image(mode.title, 0.4)
+        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
+        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
 
     def rgbString(r, g, b):
         return f'#{r:02x}{g:02x}{b:02x}'
@@ -43,7 +43,7 @@ class TitleScreen(Mode):
     def mouse_pressed(mode, event):
         if ((mode.width/2-150 <= event.x <= mode.width/2+150) 
             and (mode.height*2/3-50 <= event.y <= mode.height*2/3+50)):
-            mode.app.setActiveMode(mode.app.backgroundScreen)
+            mode.app.set_active_mode(mode.app.backgroundScreen)
             mode.homeButtonColor = mode.green
     
     def mouse_moved(mode, event):
@@ -61,8 +61,8 @@ class TitleScreen(Mode):
     def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
-            randomX = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(randomX, 0))
+            random_x = random.randrange(mode.width)
+            mode.snow.append(FallingSnow(random_x, 0))
             mode.count = 0
 
         for snowball in mode.snow:
@@ -74,9 +74,9 @@ class TitleScreen(Mode):
                             image=ImageTk.PhotoImage(mode.backgroundResized))
         # snow
         for snowball in mode.snow:
-            snowX, snowY = snowball.x, snowball.y
-            canvas.create_oval(snowX-mode.snowR, snowY-mode.snowR, 
-                            snowX+mode.snowR, snowY+mode.snowR,
+            snow_x, snow_y = snowball.x, snowball.y
+            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
+                            snow_x+mode.snowR, snow_y+mode.snowR,
                             fill='white',
                             outline='')
         # title
@@ -127,14 +127,14 @@ bad memory by following the instructions on the
 next slide, and prove to the world that Santa 
 still has what it takes to deliver presents to 
 every last kid!'''
-        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
+        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
+        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
 
     def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
-            randomX = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(randomX, 0))
+            random_x = random.randrange(mode.width)
+            mode.snow.append(FallingSnow(random_x, 0))
             mode.count = 0
 
         for snowball in mode.snow:
@@ -142,11 +142,11 @@ every last kid!'''
 
     def mouse_pressed(mode, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.app.setActiveMode(mode.app.titleScreen)
+            mode.app.set_active_mode(mode.app.titleScreen)
             mode.homeButtonColor = mode.green
         elif ((mode.width-150 <= event.x <= mode.width-50) 
             and (50 <= event.y <= 100)):
-            mode.app.setActiveMode(mode.app.instructionsScreen)
+            mode.app.set_active_mode(mode.app.instructionsScreen)
             mode.nextButtonColor = mode.green
     
     def mouse_moved(mode, event):
@@ -166,9 +166,9 @@ every last kid!'''
                             image=ImageTk.PhotoImage(mode.backgroundResized))
         # snow
         for snowball in mode.snow:
-            snowX, snowY = snowball.x, snowball.y
-            canvas.create_oval(snowX-mode.snowR, snowY-mode.snowR, 
-                            snowX+mode.snowR, snowY+mode.snowR,
+            snow_x, snow_y = snowball.x, snowball.y
+            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
+                            snow_x+mode.snowR, snow_y+mode.snowR,
                             fill='white',
                             outline='')
         # title
@@ -229,14 +229,14 @@ Hints:
 
 Proceed to the next page to choose Santa’s sleigh and begin. 
 Hurry - you’re running out of time!'''
-        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
+        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
+        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
 
     def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
-            randomX = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(randomX, 0))
+            random_x = random.randrange(mode.width)
+            mode.snow.append(FallingSnow(random_x, 0))
             mode.count = 0
 
         for snowball in mode.snow:
@@ -244,11 +244,11 @@ Hurry - you’re running out of time!'''
 
     def mouse_pressed(mode, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.app.setActiveMode(mode.app.backgroundScreen)
+            mode.app.set_active_mode(mode.app.backgroundScreen)
             mode.backButtonColor = mode.green
         elif ((mode.width-150 <= event.x <= mode.width-50) 
             and (50 <= event.y <= 100)):
-            mode.app.setActiveMode(mode.app.sleighScreen)
+            mode.app.set_active_mode(mode.app.sleighScreen)
             mode.nextButtonColor = mode.green
     
     def mouse_moved(mode, event):
@@ -268,9 +268,9 @@ Hurry - you’re running out of time!'''
                             image=ImageTk.PhotoImage(mode.backgroundResized))
         # snow
         for snowball in mode.snow:
-            snowX, snowY = snowball.x, snowball.y
-            canvas.create_oval(snowX-mode.snowR, snowY-mode.snowR, 
-                            snowX+mode.snowR, snowY+mode.snowR,
+            snow_x, snow_y = snowball.x, snowball.y
+            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
+                            snow_x+mode.snowR, snow_y+mode.snowR,
                             fill='white',
                             outline='')
         # title
@@ -357,20 +357,20 @@ because he’s a bad driver and
 doesn’t want to scrape her, but 
 also because she’ll attract …the 
 Grinch! (who will steal his presents)'''
-        mode.sleigh1 = mode.loadImage('sleigh1.png')
-        mode.sleigh1Resized = mode.scaleImage(mode.sleigh1, 0.1)
-        mode.sleigh2 = mode.loadImage('sleigh2.png')
-        mode.sleigh2Resized = mode.scaleImage(mode.sleigh2, 0.1)
-        mode.sleigh3 = mode.loadImage('sleigh3.png')
-        mode.sleigh3Resized = mode.scaleImage(mode.sleigh3, 0.1)
-        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
+        mode.sleigh1 = mode.load_image('sleigh1.png')
+        mode.sleigh1Resized = mode.scale_image(mode.sleigh1, 0.1)
+        mode.sleigh2 = mode.load_image('sleigh2.png')
+        mode.sleigh2Resized = mode.scale_image(mode.sleigh2, 0.1)
+        mode.sleigh3 = mode.load_image('sleigh3.png')
+        mode.sleigh3Resized = mode.scale_image(mode.sleigh3, 0.1)
+        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
+        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
 
     def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
-            randomX = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(randomX, 0))
+            random_x = random.randrange(mode.width)
+            mode.snow.append(FallingSnow(random_x, 0))
             mode.count = 0
 
         for snowball in mode.snow:
@@ -414,31 +414,31 @@ Grinch! (who will steal his presents)'''
     def mouse_pressed(mode, event):
         # 'Back' button
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.app.setActiveMode(mode.app.instructionsScreen)
+            mode.app.set_active_mode(mode.app.instructionsScreen)
             mode.backButtonColor = mode.green
         # 'Home' button
         elif ((mode.width-150 <= event.x <= mode.width-50) 
             and (50 <= event.y <= 100)):
-            mode.app.setActiveMode(mode.app.titleScreen)
+            mode.app.set_active_mode(mode.app.titleScreen)
             mode.nextButtonColor = mode.green
         # 'Play Sleigh 1' button
         elif ((mode.width/6-80 <= event.x <= mode.width/6+80) 
             and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
             mode.app.timeSec = 0
             mode.app.timeMin = 0
-            mode.app.setActiveMode(mode.app.maze) 
+            mode.app.set_active_mode(mode.app.maze) 
             mode.mode1ButtonColor = mode.green
         # 'Play Sleigh 2' button
         elif ((mode.width/2-80 <= event.x <= mode.width/2+80) 
             and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
             mode.app.presents = 100
-            mode.app.setActiveMode(mode.app.radiusMode) 
+            mode.app.set_active_mode(mode.app.radiusMode) 
             mode.mode2ButtonColor = mode.green
         # 'Play Sleigh 3' button
         elif ((mode.width*5/6-80 <= event.x <= mode.width*5/6+80) 
             and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
             mode.app.presents = 100
-            mode.app.setActiveMode(mode.app.grinchMode) 
+            mode.app.set_active_mode(mode.app.grinchMode) 
             mode.mode3ButtonColor = mode.green
 
     def redraw_all(mode, canvas):
@@ -447,9 +447,9 @@ Grinch! (who will steal his presents)'''
                             image=ImageTk.PhotoImage(mode.backgroundResized))
         # snow
         for snowball in mode.snow:
-            snowX, snowY = snowball.x, snowball.y
-            canvas.create_oval(snowX-mode.snowR, snowY-mode.snowR, 
-                            snowX+mode.snowR, snowY+mode.snowR,
+            snow_x, snow_y = snowball.x, snowball.y
+            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
+                            snow_x+mode.snowR, snow_y+mode.snowR,
                             fill='white',
                             outline='')
         # title
@@ -555,14 +555,14 @@ class FinalScreen(SleighScreen):
         mode.playAgainButtonTextColor = 'white'
         mode.homeButtonColor = mode.green
         mode.homeButtonTextColor = 'white'
-        mode.background = mode.loadImage(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scaleImage(mode.background, 0.5)
+        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
+        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
 
     def timer_fired(mode):
         mode.count += 1
         if (mode.count == 20):
-            randomX = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(randomX, 0))
+            random_x = random.randrange(mode.width)
+            mode.snow.append(FallingSnow(random_x, 0))
             mode.count = 0
 
         for snowball in mode.snow:
@@ -589,13 +589,13 @@ class FinalScreen(SleighScreen):
         if ((mode.width/2-200 <= event.x <= mode.width/2+200) 
             and (mode.height*7/10-50 <= event.y <= mode.height*7/10+50)):
             mode.app.presents = 0
-            mode.app.setActiveMode(mode.app.sleighScreen)
+            mode.app.set_active_mode(mode.app.sleighScreen)
             mode.playAgainButtonColor = mode.green
         # 'Home' button
         elif ((mode.width/2-50 <= event.x <= mode.width/2+50) 
             and (mode.height*9/10-25 <= event.y <= mode.height*9/10+25)):
             mode.app.presents = 0
-            mode.app.setActiveMode(mode.app.titleScreen)
+            mode.app.set_active_mode(mode.app.titleScreen)
             mode.homeButtonColor = mode.green
 
     def redraw_all(mode, canvas):
@@ -604,9 +604,9 @@ class FinalScreen(SleighScreen):
                             image=ImageTk.PhotoImage(mode.backgroundResized))
         # snow
         for snowball in mode.snow:
-            snowX, snowY = snowball.x, snowball.y
-            canvas.create_oval(snowX-mode.snowR, snowY-mode.snowR, 
-                            snowX+mode.snowR, snowY+mode.snowR,
+            snow_x, snow_y = snowball.x, snowball.y
+            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
+                            snow_x+mode.snowR, snow_y+mode.snowR,
                             fill='white',
                             outline='')
         # title

@@ -32,7 +32,7 @@ LAST_UPDATED  = datetime.date(year=2020, month=2, day=24)
 #   * f20
 
 # Chages in v0.8.5
-#   * Support loadImage from Modes
+#   * Support load_image from Modes
 
 # Chages in v0.8.3 + v0.8.4
 #   * Use default empty Mode if none is provided
@@ -66,7 +66,7 @@ LAST_UPDATED  = datetime.date(year=2020, month=2, day=24)
 #   * Replaces showGraphics() with runApp(...), which is a veneer for App(...) [more intuitive for pre-OOP part of course]
 #   * Fixes/updates images:
 #       * disallows loading images in redraw_all (raises exception)
-#       * eliminates cache from loadImage
+#       * eliminates cache from load_image
 #       * eliminates app.getTkinterImage, so user now directly calls ImageTk.PhotoImage(image))
 #       * also create_image allows magic pil_image=image instead of image=ImageTk.PhotoImage(app.image)
 
@@ -74,16 +74,16 @@ LAST_UPDATED  = datetime.date(year=2020, month=2, day=24)
 #   * Added keyboard shortcut:
 #       * cmd/ctrl/alt-x: hard exit (uses os._exit() to exit shell without tkinter error messages)
 #   * Fixed bug: shortcut keys stopped working after an MVC violation (or other exception)
-#   * In app.saveSnapshot(), add .png to path if missing
+#   * In app.save_snapshot(), add .png to path if missing
 #   * Added: Print scripts to copy-paste into shell to install missing modules (more automated approaches proved too brittle)
 
 # Changes in v0.7
 #   * Added some image handling (requires PIL (retained) and pyscreenshot (later removed):
-#       * app.loadImage()       # loads PIL/Pillow image from file, with file dialog, or from URL (http or https)
-#       * app.scaleImage()      # scales a PIL/Pillow image
+#       * app.load_image()       # loads PIL/Pillow image from file, with file dialog, or from URL (http or https)
+#       * app.scale_image()      # scales a PIL/Pillow image
 #       * app.getTkinterImage() # converts PIL/Pillow image to Tkinter PhotoImage for use in create_image(...)
-#       * app.getSnapshot()     # get a snapshot of the canvas as a PIL/Pillow image
-#       * app.saveSnapshot()    # get and save a snapshot
+#       * app.get_snapshot()     # get a snapshot of the canvas as a PIL/Pillow image
+#       * app.save_snapshot()    # get and save a snapshot
 #   * Added app._paused, app.togglePaused(), and paused highlighting (red outline around canvas when paused)
 #   * Added keyboard shortcuts:
 #       * cmd/ctrl/alt-s: save a snapshot
@@ -91,28 +91,28 @@ LAST_UPDATED  = datetime.date(year=2020, month=2, day=24)
 #       * cmd/ctrl/alt-q: quit
 
 # Changes in v0.6:
-#   * Added fnPrefix option to TopLevelApp (so multiple TopLevelApp's can be in one file)
+#   * Added fn_prefix option to TopLevelApp (so multiple TopLevelApp's can be in one file)
 #   * Added showGraphics(drawFn) (for graphics-only drawings before we introduce animations)
 
 # Changes in v0.5:
 #   * Added:
 #       * app.winx and app.winy (and add winx,winy parameters to app.__init__, and sets these on configure events)
-#       * app.setSize(width, height)
-#       * app.setPosition(x, y)
+#       * app.set_size(width, height)
+#       * app.set_position(x, y)
 #       * app.quit()
-#       * app.showMessage(message)
-#       * app.getUserInput(prompt)
+#       * app.show_message(message)
+#       * app.get_user_input(prompt)
 #       * App.last_updated (instance of datetime.date)
 #   * Show popup dialog box on all exceptions (not just for MVC violations)
 #   * Draw (in canvas) "Exception!  App Stopped! (See console for details)" for any exception
-#   * Replace callUserMethod() with more-general @_safeMethod decorator (also handles exceptions outside user methods)
+#   * Replace callUserMethod() with more-general @_safe_method decorator (also handles exceptions outside user methods)
 #   * Only include lines from user's code (and not our framework nor tkinter) in stack traces
 #   * Require Python version (3.6 or greater)
 
 # Changes in v0.4:
 #   * Added __setattr__ to enforce Type 1A MVC Violations (setting app.x in redraw_all) with better stack trace
-#   * Added app._deferredRedrawAll() (avoids resizing drawing/crashing bug on some platforms)
-#   * Added deferredMethodCall() and app._afterIdMap to generalize afterId handling
+#   * Added app._deferred_redraw_all() (avoids resizing drawing/crashing bug on some platforms)
+#   * Added deferredMethodCall() and app._after_id_map to generalize after_id handling
 #   * Use (_ is None) instead of (_ == None)
 
 # Changes in v0.3:
@@ -191,17 +191,17 @@ def get_hash(obj):
 class WrappedCanvas(Canvas):
     # Enforces MVC: no drawing outside calls to redraw_all
     # Logs draw calls (for autograder) in canvas.loggedDrawingCalls
-    def __init__(wrappedCanvas, app):
-        wrappedCanvas.loggedDrawingCalls = [ ]
-        wrappedCanvas.logDrawingCalls = True
-        wrappedCanvas.inRedrawAll = False
-        wrappedCanvas.app = app
+    def __init__(wrapped_canvas, app):
+        wrapped_canvas.loggedDrawingCalls = [ ]
+        wrapped_canvas.log_drawing_calls = True
+        wrapped_canvas.inRedrawAll = False
+        wrapped_canvas.app = app
         super().__init__(app._root, width=app.width, height=app.height)
 
     def log(self, method_name, args, kwargs):
         if (not self.inRedrawAll):
-            self.app._mvcViolation('you may not use the canvas (the view) outside of redraw_all')
-        if (self.logDrawingCalls):
+            self.app._mvc_violation('you may not use the canvas (the view) outside of redraw_all')
+        if (self.log_drawing_calls):
             self.loggedDrawingCalls.append((method_name, args, kwargs))
 
     def create_arc(self, *args, **kwargs): self.log('create_arc', args, kwargs); return super().create_arc(*args, **kwargs)
@@ -264,32 +264,32 @@ class App(object):
     # Implementation:
     ####################################
 
-    def __init__(app, width=300, height=300, x=0, y=0, title=None, autorun=True, mvcCheck=True, logDrawingCalls=True):
+    def __init__(app, width=300, height=300, x=0, y=0, title=None, autorun=True, mvc_check=True, log_drawing_calls=True):
         app.winx, app.winy, app.width, app.height = x, y, width, height
-        app.timerDelay = 100     # milliseconds
-        app.mouseMovedDelay = 50 # ditto
+        app.timer_delay = 100     # milliseconds
+        app.mouse_moved_delay = 50 # ditto
         app._title = title
-        app._mvcCheck = mvcCheck
-        app._logDrawingCalls = logDrawingCalls
+        app._mvc_check = mvc_check
+        app._log_drawing_calls = log_drawing_calls
         app._running = app._paused = False
-        app._mousePressedOutsideWindow = False
+        app._mouse_pressed_outside_window = False
         if autorun: app.run()
 
-    def setSize(app, width, height):
+    def set_size(app, width, height):
         app._root.geometry(f'{width}x{height}')
 
-    def setPosition(app, x, y):
+    def set_position(app, x, y):
         app._root.geometry(f'+{x}+{y}')
 
-    def showMessage(app, message):
-        messagebox.showinfo('showMessage', message, parent=app._root)
+    def show_message(app, message):
+        messagebox.showinfo('show_message', message, parent=app._root)
 
-    def getUserInput(app, prompt):
-        return simpledialog.askstring('getUserInput', prompt)
+    def get_user_input(app, prompt):
+        return simpledialog.askstring('get_user_input', prompt)
 
-    def loadImage(app, path=None):
+    def load_image(app, path=None):
         if (app._canvas.inRedrawAll):
-            raise RuntimeError('Cannot call loadImage in redraw_all')
+            raise RuntimeError('Cannot call load_image in redraw_all')
 
         if (path is None):
             path = filedialog.askopenfilename(
@@ -308,26 +308,26 @@ class App(object):
 
         return image
 
-    def scaleImage(app, image, scale, antialias=False):
+    def scale_image(app, image, scale, antialias=False):
         # antialiasing is higher-quality but slower
         resample = Image.ANTIALIAS if antialias else Image.NEAREST
         return image.resize((round(image.width*scale), round(image.height*scale)), resample=resample)
 
-    def getSnapshot(app):
-        app._showRootWindow()
+    def get_snapshot(app):
+        app._show_root_window()
         x0 = app._root.winfo_rootx() + app._canvas.winfo_x()
         y0 = app._root.winfo_rooty() + app._canvas.winfo_y()
         result = ImageGrabber.grab((x0,y0,x0+app.width,y0+app.height))
         return result
 
-    def saveSnapshot(app):
+    def save_snapshot(app):
         path = filedialog.asksaveasfilename(initialdir=os.getcwd(), title='Select file: ',filetypes = (('png files','*.png'),('all files','*.*')))
         if (path):
             # defer call to let filedialog close (and not grab those pixels)
             if (not path.endswith('.png')): path += '.png'
-            app._deferredMethodCall(afterId='saveSnapshot', afterDelay=0, afterFn=lambda:app.getSnapshot().save(path))
+            app._deferred_method_call(after_id='save_snapshot', after_delay=0, after_fn=lambda:app.get_snapshot().save(path))
 
-    def _togglePaused(app):
+    def _toggle_paused(app):
         app._paused = not app._paused
 
     def quit(app):
@@ -339,44 +339,44 @@ class App(object):
         d[attr] = val
         canvas = d.get('_canvas', None)
         if (d.get('running', False) and
-            d.get('mvcCheck', False) and
+            d.get('mvc_check', False) and
             (canvas is not None) and
             canvas.inRedrawAll):
-            app._mvcViolation(f'you may not change app.{attr} in the model while in redraw_all (the view)')
+            app._mvc_violation(f'you may not change app.{attr} in the model while in redraw_all (the view)')
 
-    def _printUserTraceback(app, exception, tb):
+    def _print_user_traceback(app, exception, tb):
         stack = traceback.extract_tb(tb)
         lines = traceback.format_list(stack)
-        inRedrawAllWrapper = False
-        printLines = [ ]
+        in_redraw_all_wrapper = False
+        print_lines = [ ]
         for line in lines:
             if (('"cmu_112_graphics.py"' not in line) and
                 ('/cmu_112_graphics.py' not in line) and
                 ('\\cmu_112_graphics.py' not in line) and
                 ('/tkinter/' not in line) and
                 ('\\tkinter\\' not in line)):
-                printLines.append(line)
+                print_lines.append(line)
             if ('redrawAllWrapper' in line):
-                inRedrawAllWrapper = True
-        if (len(printLines) == 0):
+                in_redraw_all_wrapper = True
+        if (len(print_lines) == 0):
             # No user code in trace, so we have to use all the code (bummer),
             # but not if we are in a redrawAllWrapper...
-            if inRedrawAllWrapper:
-                printLines = ['    No traceback available. Error occurred in redraw_all.\n']
+            if in_redraw_all_wrapper:
+                print_lines = ['    No traceback available. Error occurred in redraw_all.\n']
             else:
-                printLines = lines
+                print_lines = lines
         print('Traceback (most recent call last):')
-        for line in printLines: print(line, end='')
+        for line in print_lines: print(line, end='')
         print(f'Exception: {exception}')
 
-    def _safeMethod(appMethod):
+    def _safe_method(app_method):
         def m(*args, **kwargs):
             app = args[0]
             try:
-                return appMethod(*args, **kwargs)
+                return app_method(*args, **kwargs)
             except Exception as e:
                 app._running = False
-                app._printUserTraceback(e, sys.exc_info()[2])
+                app._print_user_traceback(e, sys.exc_info()[2])
                 if ('_canvas' in app.__dict__):
                     app._canvas.inRedrawAll = True  # not really, but stops recursive MVC Violations!
                     app._canvas.create_rectangle(0, 0, app.width, app.height, fill=None, width=10, outline='red')
@@ -387,80 +387,80 @@ class App(object):
                     app._canvas.create_text(app.width/2, app.height-20, 
                                             text='See console for details', fill='red', font='Arial 12 bold')
                     app._canvas.update()
-                app.showMessage('Exception: {}\nClick ok then see console for details.'.format(e))
+                app.show_message('Exception: {}\nClick ok then see console for details.'.format(e))
         return m
 
-    def _methodIsOverridden(app, method_name):
+    def _method_is_overridden(app, method_name):
         return (getattr(type(app), method_name) is not getattr(App, method_name))
 
-    def _mvcViolation(app, errMsg):
+    def _mvc_violation(app, err_msg):
         app._running = False
-        raise RuntimeError('MVC Violation: ' + errMsg)
+        raise RuntimeError('MVC Violation: ' + err_msg)
 
-    @_safeMethod
-    def _redrawAllWrapper(app):
+    @_safe_method
+    def _redraw_all_wrapper(app):
         if (not app._running): return
-        if ('deferredRedrawAll' in app._afterIdMap): return # wait for pending call
+        if ('deferredRedrawAll' in app._after_id_map): return # wait for pending call
         app._canvas.inRedrawAll = True
         app._canvas.delete(ALL)
         width,outline = (10,'red') if app._paused else (0,'white')
         app._canvas.create_rectangle(0, 0, app.width, app.height, fill='white', width=width, outline=outline)
         app._canvas.loggedDrawingCalls = [ ]
-        app._canvas.logDrawingCalls = app._logDrawingCalls
-        hash1 = get_hash(app) if app._mvcCheck else None
+        app._canvas.log_drawing_calls = app._log_drawing_calls
+        hash1 = get_hash(app) if app._mvc_check else None
         try:
             app.redraw_all(app._canvas)
-            hash2 = get_hash(app) if app._mvcCheck else None
+            hash2 = get_hash(app) if app._mvc_check else None
             if (hash1 != hash2):
-                app._mvcViolation('you may not change the app state (the model) in redraw_all (the view)')
+                app._mvc_violation('you may not change the app state (the model) in redraw_all (the view)')
         finally:
             app._canvas.inRedrawAll = False
         app._canvas.update()
 
-    def _deferredMethodCall(app, afterId, afterDelay, afterFn, replace=False):
-        current_id = app._afterIdMap.get(afterId, None)  # renomeado de 'id'
+    def _deferred_method_call(app, after_id, after_delay, after_fn, replace=False):
+        current_id = app._after_id_map.get(after_id, None)  # renomeado de 'id'
 
-        def after_fn_wrapper(afterFn=afterFn, afterId=afterId):
-            app._afterIdMap.pop(afterId, None)
-            afterFn()
+        def after_fn_wrapper(after_fn=after_fn, after_id=after_id):
+            app._after_id_map.pop(after_id, None)
+            after_fn()
 
         if (current_id is None) or replace:
             if current_id:
                 app._root.after_cancel(current_id)
-            app._afterIdMap[afterId] = app._root.after(afterDelay, after_fn_wrapper)
+            app._after_id_map[after_id] = app._root.after(after_delay, after_fn_wrapper)
 
 
-    def _deferredRedrawAll(app):
-        app._deferredMethodCall(afterId='deferredRedrawAll', afterDelay=100, afterFn=app._redrawAllWrapper, replace=True)
+    def _deferred_redraw_all(app):
+        app._deferred_method_call(after_id='deferredRedrawAll', after_delay=100, after_fn=app._redraw_all_wrapper, replace=True)
 
-    @_safeMethod
-    def _appStartedWrapper(app):
+    @_safe_method
+    def _app_started_wrapper(app):
         app.app_started()
-        app._redrawAllWrapper()
+        app._redraw_all_wrapper()
 
-    _keyNameMap = { '\t':'Tab', '\n':'Enter', '\r':'Enter', '\b':'Backspace',
+    _key_name_map = { '\t':'Tab', '\n':'Enter', '\r':'Enter', '\b':'Backspace',
                    chr(127):'Delete', chr(27):'Escape', ' ':'Space' }
 
     @staticmethod
-    def _useEventKey(attr):
+    def _use_event_key(attr):
         raise AttributeError(f'Use event.key instead of event.{attr}')
 
     @staticmethod
-    def _getEventKeyInfo(event, keysym, char):
+    def _get_event_key_info(event, keysym, char):
         key = c = char
-        hasControlKey = (event.state & 0x4 != 0)
+        has_control_key = (event.state & 0x4 != 0)
         if ((c in [None, '']) or (len(c) > 1) or (ord(c) > 255)):
             key = keysym
             if (key.endswith('_L') or
                 key.endswith('_R') or
                 key.endswith('_Lock')):
                 key = 'Modifier_Key'
-        elif (c in App._keyNameMap):
-            key = App._keyNameMap[c]
+        elif (c in App._key_name_map):
+            key = App._key_name_map[c]
         elif ((len(c) == 1) and (1 <= ord(c) <= 26)):
             key = chr(ord('a')-1 + ord(c))
-            hasControlKey = True
-        if hasControlKey and (len(key) == 1):
+            has_control_key = True
+        if has_control_key and (len(key) == 1):
             # don't add control- prefix to Enter, Tab, Escape, ...
             key = 'control-' + key
         return key
@@ -473,174 +473,176 @@ class App(object):
             for key in event.__dict__:
                 if (not key.startswith('__')):
                     self.__dict__[key] = event.__dict__[key]
-            self.key = App._getEventKeyInfo(event, keysym, char)
-        keysym = property(lambda *args: App._useEventKey('keysym'),
-                          lambda *args: App._useEventKey('keysym'))
-        char =   property(lambda *args: App._useEventKey('char'),
-                          lambda *args: App._useEventKey('char'))
+            self.key = App._get_event_key_info(event, keysym, char)
+        keysym = property(lambda *args: App._use_event_key('keysym'),
+                          lambda *args: App._use_event_key('keysym'))
+        char =   property(lambda *args: App._use_event_key('char'),
+                          lambda *args: App._use_event_key('char'))
 
-    @_safeMethod
-    def _keyPressedWrapper(app, event):
+    @_safe_method
+    def _key_pressed_wrapper(app, event):
         event = App.KeyEventWrapper(event)
         if (event.key == 'control-s'):
-            app.saveSnapshot()
+            app.save_snapshot()
         elif (event.key == 'control-p'):
-            app._togglePaused()
-            app._redrawAllWrapper()
+            app._toggle_paused()
+            app._redraw_all_wrapper()
         elif (event.key == 'control-q'):
             app.quit()
         elif (event.key == 'control-x'):
             os._exit(0) # hard exit avoids tkinter error messages
         elif (app._running and
-              (not app._paused) and
-              app._methodIsOverridden('key_pressed') and
-              (not event.key == 'Modifier_Key')):
+            (not app._paused) and
+            app._method_is_overridden('key_pressed') and
+            event.key != 'Modifier_Key'):
+
             app.key_pressed(event)
-            app._redrawAllWrapper()
+            app._redraw_all_wrapper()
 
-    @_safeMethod
-    def _keyReleasedWrapper(app, event):
-        if (not app._running) or app._paused or (not app._methodIsOverridden('key_released')): return
+    @_safe_method
+    def _key_released_wrapper(app, event):
+        if (not app._running) or app._paused or (not app._method_is_overridden('key_released')):
+            return
         event = App.KeyEventWrapper(event)
-        if (not event.key == 'Modifier_Key'):
+        if event.key != 'Modifier_Key':
             app.key_released(event)
-            app._redrawAllWrapper()
+            app._redraw_all_wrapper()
 
-    @_safeMethod
-    def _mousePressedWrapper(app, event):
+    @_safe_method
+    def _mouse_pressed_wrapper(app, event):
         if (not app._running) or app._paused: return
         if ((event.x < 0) or (event.x > app.width) or
             (event.y < 0) or (event.y > app.height)):
-            app._mousePressedOutsideWindow = True
+            app._mouse_pressed_outside_window = True
         else:
-            app._mousePressedOutsideWindow = False
-            app._mouseIsPressed = True
-            app._lastMousePosn = (event.x, event.y)
-            if (app._methodIsOverridden('mouse_pressed')):
+            app._mouse_pressed_outside_window = False
+            app._mouse_is_pressed = True
+            app._last_mouse_posn = (event.x, event.y)
+            if (app._method_is_overridden('mouse_pressed')):
                 app.mouse_pressed(event)
-                app._redrawAllWrapper()
+                app._redraw_all_wrapper()
 
-    @_safeMethod
-    def _mouseReleasedWrapper(app, event):
+    @_safe_method
+    def _mouse_released_wrapper(app, event):
         if (not app._running) or app._paused: return
-        app._mouseIsPressed = False
-        if app._mousePressedOutsideWindow:
-            app._mousePressedOutsideWindow = False
-            app._sizeChangedWrapper()
+        app._mouse_is_pressed = False
+        if app._mouse_pressed_outside_window:
+            app._mouse_pressed_outside_window = False
+            app._size_changed_wrapper()
         else:
-            app._lastMousePosn = (event.x, event.y)
-            if (app._methodIsOverridden('mouse_released')):
+            app._last_mouse_posn = (event.x, event.y)
+            if (app._method_is_overridden('mouse_released')):
                 app.mouse_released(event)
-                app._redrawAllWrapper()
+                app._redraw_all_wrapper()
 
-    @_safeMethod
-    def _timerFiredWrapper(app):
-        if (not app._running) or (not app._methodIsOverridden('timer_fired')): return
+    @_safe_method
+    def _timer_fired_wrapper(app):
+        if (not app._running) or (not app._method_is_overridden('timer_fired')): return
         if (not app._paused):
             app.timer_fired()
-            app._redrawAllWrapper()
-        app._deferredMethodCall(afterId='_timerFiredWrapper', afterDelay=app.timerDelay, afterFn=app._timerFiredWrapper)
+            app._redraw_all_wrapper()
+        app._deferred_method_call(after_id='_timer_fired_wrapper', after_delay=app.timer_delay, after_fn=app._timer_fired_wrapper)
 
-    @_safeMethod
-    def _sizeChangedWrapper(app, event=None):
+    @_safe_method
+    def _size_changed_wrapper(app, event=None):
         if (not app._running): return
         if (event and ((event.width < 2) or (event.height < 2))): return
-        if (app._mousePressedOutsideWindow): return
+        if (app._mouse_pressed_outside_window): return
         app.width,app.height,app.winx,app.winy = [int(v) for v in app._root.winfo_geometry().replace('x','+').split('+')]
-        if (app._lastWindowDims is None):
-            app._lastWindowDims = (app.width, app.height, app.winx, app.winy)
+        if (app._last_window_dims is None):
+            app._last_window_dims = (app.width, app.height, app.winx, app.winy)
         else:
-            newDims =(app.width, app.height, app.winx, app.winy)
-            if (app._lastWindowDims != newDims):
-                app._lastWindowDims = newDims
-                app.updateTitle()
+            new_dims =(app.width, app.height, app.winx, app.winy)
+            if (app._last_window_dims != new_dims):
+                app._last_window_dims = new_dims
+                app.update_title()
                 app.size_changed()
-                app._deferredRedrawAll() # avoid resize crashing on some platforms
+                app._deferred_redraw_all() # avoid resize crashing on some platforms
 
-    @_safeMethod
-    def _mouseMotionWrapper(app):
+    @_safe_method
+    def _mouse_motion_wrapper(app):
         if (not app._running): return
-        mouseMovedExists = app._methodIsOverridden('mouse_moved')
-        mouseDraggedExists = app._methodIsOverridden('mouse_dragged')
+        mouse_moved_exists = app._method_is_overridden('mouse_moved')
+        mouse_dragged_exists = app._method_is_overridden('mouse_dragged')
         if ((not app._paused) and
-            (not app._mousePressedOutsideWindow) and
-            (((not app._mouseIsPressed) and mouseMovedExists) or
-             (app._mouseIsPressed and mouseDraggedExists))):
+            (not app._mouse_pressed_outside_window) and
+            (((not app._mouse_is_pressed) and mouse_moved_exists) or
+             (app._mouse_is_pressed and mouse_dragged_exists))):
             class MouseMotionEvent(object): pass
             event = MouseMotionEvent()
             root = app._root
             event.x = root.winfo_pointerx() - root.winfo_rootx()
             event.y = root.winfo_pointery() - root.winfo_rooty()
-            if ((app._lastMousePosn !=  (event.x, event.y)) and
+            if ((app._last_mouse_posn !=  (event.x, event.y)) and
                 (event.x >= 0) and (event.x <= app.width) and
                 (event.y >= 0) and (event.y <= app.height)):
-                if (app._mouseIsPressed): app.mouse_dragged(event)
+                if (app._mouse_is_pressed): app.mouse_dragged(event)
                 else: app.mouse_moved(event)
-                app._lastMousePosn = (event.x, event.y)
-                app._redrawAllWrapper()
-        if (mouseMovedExists or mouseDraggedExists):
-            app._deferredMethodCall(afterId='mouseMotionWrapper', afterDelay=app.mouseMovedDelay, afterFn=app._mouseMotionWrapper)
+                app._last_mouse_posn = (event.x, event.y)
+                app._redraw_all_wrapper()
+        if (mouse_moved_exists or mouse_dragged_exists):
+            app._deferred_method_call(after_id='mouseMotionWrapper', after_delay=app.mouse_moved_delay, after_fn=app._mouse_motion_wrapper)
 
-    def updateTitle(app):
+    def update_title(app):
         app._title = app._title or type(app).__name__
         app._root.title(f'{app._title} ({app.width} x {app.height})')
 
-    def getQuitMessage(app):
-        appLabel = type(app).__name__
-        if (app._title != appLabel):
-            if (app._title.startswith(appLabel)):
-                appLabel = app._title
+    def get_quit_message(app):
+        app_label = type(app).__name__
+        if (app._title != app_label):
+            if (app._title.startswith(app_label)):
+                app_label = app._title
             else:
-                appLabel += f" '{app._title}'"
-        return f"*** Closing {appLabel}.  Bye! ***\n"
+                app_label += f" '{app._title}'"
+        return f"*** Closing {app_label}.  Bye! ***\n"
 
-    def _showRootWindow(app):
+    def _show_root_window(app):
         root = app._root
         root.update(); root.deiconify(); root.lift(); root.focus()
 
-    def _hideRootWindow(app):
+    def _hide_root_window(app):
         root = app._root
         root.withdraw()
 
-    @_safeMethod
+    @_safe_method
     def run(app):
-        app._mouseIsPressed = False
-        app._lastMousePosn = (-1, -1)
-        app._lastWindowDims= None # set in sizeChangedWrapper
-        app._afterIdMap = dict()
+        app._mouse_is_pressed = False
+        app._last_mouse_posn = (-1, -1)
+        app._last_window_dims= None # set in sizeChangedWrapper
+        app._after_id_map = {}
         # create the singleton root window
         if (App._the_root is None):
             App._the_root = Tk()
             App._the_root.createcommand('exit', lambda: '') # when user enters cmd-q, ignore here (handled in key_pressed)
             App._the_root.protocol('WM_DELETE_WINDOW', lambda: App._the_root.app.quit()) # when user presses 'x' in title bar
-            App._the_root.bind("<Button-1>", lambda event: App._the_root.app._mousePressedWrapper(event))
-            App._the_root.bind("<B1-ButtonRelease>", lambda event: App._the_root.app._mouseReleasedWrapper(event))
-            App._the_root.bind("<KeyPress>", lambda event: App._the_root.app._keyPressedWrapper(event))
-            App._the_root.bind("<KeyRelease>", lambda event: App._the_root.app._keyReleasedWrapper(event))
-            App._the_root.bind("<Configure>", lambda event: App._the_root.app._sizeChangedWrapper(event))
+            App._the_root.bind("<Button-1>", lambda event: App._the_root.app._mouse_pressed_wrapper(event))
+            App._the_root.bind("<B1-ButtonRelease>", lambda event: App._the_root.app._mouse_released_wrapper(event))
+            App._the_root.bind("<KeyPress>", lambda event: App._the_root.app._key_pressed_wrapper(event))
+            App._the_root.bind("<KeyRelease>", lambda event: App._the_root.app._key_released_wrapper(event))
+            App._the_root.bind("<Configure>", lambda event: App._the_root.app._size_changed_wrapper(event))
         else:
             App._the_root.canvas.destroy()
         app._root = root = App._the_root # singleton root!
         root.app = app
         root.geometry(f'{app.width}x{app.height}+{app.winx}+{app.winy}')
-        app.updateTitle()
+        app.update_title()
         # create the canvas
         root.canvas = app._canvas = WrappedCanvas(app)
         app._canvas.pack(fill=BOTH, expand=YES)
         # initialize, start the timer, and launch the app
         app._running = True
         app._paused = False
-        app._appStartedWrapper()
-        app._timerFiredWrapper()
-        app._mouseMotionWrapper()
-        app._showRootWindow()
+        app._app_started_wrapper()
+        app._timer_fired_wrapper()
+        app._mouse_motion_wrapper()
+        app._show_root_window()
         root.mainloop()
-        app._hideRootWindow()
+        app._hide_root_window()
         app._running = False
-        for afterId in app._afterIdMap: app._root.after_cancel(app._afterIdMap[afterId])
-        app._afterIdMap.clear() # for safety
+        for after_id in app._after_id_map: app._root.after_cancel(app._after_id_map[after_id])
+        app._after_id_map.clear() # for safety
         app.app_stopped()
-        print(app.getQuitMessage())
+        print(app.get_quit_message())
 
 ####################################
 # TopLevelApp:
@@ -648,16 +650,16 @@ class App(object):
 ####################################
 
 class TopLevelApp(App):
-    _apps = dict() # maps fnPrefix to app
+    _apps = {} # maps fn_prefix to app
 
-    def __init__(app, fnPrefix='', **kwargs):
-        if (fnPrefix in TopLevelApp._apps):
-            print(f'Quitting previous version of {fnPrefix} TopLevelApp.')
-            TopLevelApp._apps[fnPrefix].quit()
-        if ((fnPrefix != '') and ('title' not in kwargs)):
-            kwargs['title'] = f"TopLevelApp '{fnPrefix}'"
-        TopLevelApp._apps[fnPrefix] = app
-        app._fnPrefix = fnPrefix
+    def __init__(app, fn_prefix='', **kwargs):
+        if (fn_prefix in TopLevelApp._apps):
+            print(f'Quitting previous version of {fn_prefix} TopLevelApp.')
+            TopLevelApp._apps[fn_prefix].quit()
+        if ((fn_prefix != '') and ('title' not in kwargs)):
+            kwargs['title'] = f"TopLevelApp '{fn_prefix}'"
+        TopLevelApp._apps[fn_prefix] = app
+        app._fnPrefix = fn_prefix
         app._callersGlobals = inspect.stack()[1][0].f_globals
         super().__init__(**kwargs)
 
@@ -682,59 +684,59 @@ class TopLevelApp(App):
 ####################################
 
 class ModalApp(App):
-    def __init__(app, activeMode=None, **kwargs):
+    def __init__(app, active_mode=None, **kwargs):
         app._running = False
-        app._activeMode = None
-        app.setActiveMode(activeMode)
+        app._active_mode = None
+        app.set_active_mode(active_mode)
         super().__init__(**kwargs)
 
-    def setActiveMode(app, mode):
+    def set_active_mode(app, mode):
         if (mode is None): mode = Mode()  # default empty mode
         if (not isinstance(mode, Mode)):
-            raise TypeError('activeMode must be a Mode instance!')
+            raise TypeError('active_mode must be a Mode instance!')
         if (mode.app not in [None, app]):
             raise ValueError('Modes cannot be added to two different apps!')
 
-        if (app._activeMode != mode):
+        if (app._active_mode != mode):
             mode.app = app
-            if (app._activeMode is not None):
-                app._activeMode.modeDeactivated()
-            app._activeMode = mode
+            if (app._active_mode is not None):
+                app._active_mode.modeDeactivated()
+            app._active_mode = mode
             if (app._running):
-                app.startActiveMode()
+                app.start_active_mode()
 
-    def startActiveMode(app):
-        app._activeMode.width, app._activeMode.height = app.width, app.height
-        if (not app._activeMode._appStartedCalled):
-            app._activeMode.app_started() # called once per mode
-            app._activeMode._appStartedCalled = True
-        app._activeMode.modeActivated()  # called each time a mode is activated
-        app._redrawAllWrapper()
+    def start_active_mode(app):
+        app._active_mode.width, app._active_mode.height = app.width, app.height
+        if (not app._active_mode._appStartedCalled):
+            app._active_mode.app_started() # called once per mode
+            app._active_mode._appStartedCalled = True
+        app._active_mode.modeActivated()  # called each time a mode is activated
+        app._redraw_all_wrapper()
 
     def redraw_all(app, canvas):
-        if (app._activeMode != None): app._activeMode.redraw_all(canvas)
+        if (app._active_mode != None): app._active_mode.redraw_all(canvas)
     def app_started(app):
-        if (app._activeMode != None): app.startActiveMode()
+        if (app._active_mode != None): app.start_active_mode()
     def app_stopped(app):
-        if (app._activeMode != None): app._activeMode.modeDeactivated()
+        if (app._active_mode != None): app._active_mode.modeDeactivated()
     def key_pressed(app, event):
-        if (app._activeMode != None): app._activeMode.key_pressed(event)
+        if (app._active_mode != None): app._active_mode.key_pressed(event)
     def key_released(app, event):
-        if (app._activeMode != None): app._activeMode.key_released(event)
+        if (app._active_mode != None): app._active_mode.key_released(event)
     def mouse_pressed(app, event):
-        if (app._activeMode != None): app._activeMode.mouse_pressed(event)
+        if (app._active_mode != None): app._active_mode.mouse_pressed(event)
     def mouse_released(app, event):
-        if (app._activeMode != None): app._activeMode.mouse_released(event)
+        if (app._active_mode != None): app._active_mode.mouse_released(event)
     def mouse_moved(app, event):
-        if (app._activeMode != None): app._activeMode.mouse_moved(event)
+        if (app._active_mode != None): app._active_mode.mouse_moved(event)
     def mouse_dragged(app, event):
-        if (app._activeMode != None): app._activeMode.mouse_dragged(event)
+        if (app._active_mode != None): app._active_mode.mouse_dragged(event)
     def timer_fired(app):
-        if (app._activeMode != None): app._activeMode.timer_fired()
+        if (app._active_mode != None): app._active_mode.timer_fired()
     def size_changed(app):
-        if (app._activeMode != None):
-            app._activeMode.width, app._activeMode.height = app.width, app.height
-            app._activeMode.size_changed()
+        if (app._active_mode != None):
+            app._active_mode.width, app._active_mode.height = app.width, app.height
+            app._active_mode.size_changed()
 
 class Mode(App):
     def __init__(mode, **kwargs):
@@ -751,7 +753,7 @@ class Mode(App):
         # Este método é chamado quando o modo é desativado.
         # Mantido vazio para ser sobrescrito por subclasses.
         pass
-    def loadImage(mode, path=None): return mode.app.loadImage(path)
+    def load_image(mode, path=None): return mode.app.load_image(path)
 
 ####################################
 # runApp()
