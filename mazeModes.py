@@ -11,8 +11,9 @@
 #       https://www.cs.cmu.edu/~112/notes/notes-animations-part3.html
 #
 ########################################
-from mazeGenerationAndSolution import *
-from cmu_112_graphics import *
+from mazeGenerationAndSolution import generate_maze_dict, get_maze_solution_connections
+from cmu_112_graphics import ModalApp, Mode, runApp
+from PIL import Image, ImageTk
 import random
 
 TITULO_FONTE = 'Baloo 40'

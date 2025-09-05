@@ -11,8 +11,10 @@
 #       https://www.cs.cmu.edu/~112/notes/notes-animations-part3.html
 #
 ########################################
-from gameScreens import *
-from mazeModes import *
+
+from cmu_112_graphics import ModalApp, Mode, runApp  
+from gameScreens import TitleScreen, BackgroundScreen, InstructionsScreen, SleighScreen, FinalScreen  
+from mazeModes import Maze, RadiusMode, GrinchMode  
 
 class MyApp(ModalApp):
     def app_started(self):

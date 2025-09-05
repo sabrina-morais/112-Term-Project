@@ -143,7 +143,7 @@ LAST_UPDATED  = datetime.date(year=2020, month=2, day=24)
 #   * supports version checking with App.major_version, App.minor_version, and App.version
 #   * logs drawing calls to support autograding views (still must write that autograder, but this is a very helpful first step)
 
-from tkinter import *
+from tkinter import Tk, Canvas, Frame, Button, Label, Entry, ALL, BOTH, Event, YES
 from tkinter import messagebox, simpledialog, filedialog
 import inspect, copy, traceback
 import sys, os

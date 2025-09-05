@@ -14,7 +14,8 @@
 #   3)  snowfall idea from Rachel Wilson
 #
 ########################################
-from cmu_112_graphics import *
+from cmu_112_graphics import App, runApp, Mode, ModalApp
+from PIL import Image, ImageTk
 import random
 
 BACKGROUND_IMAGE_PATH = 'background.png'
@@ -24,96 +25,96 @@ TITULO_FONTE3 = 'Baloo 30'
 TITULO_FONTE4 = 'GB18030Bitmap 11 bold'
 
 class TitleScreen(Mode):
-    def app_started(mode):
-        mode.darkGreen = TitleScreen.rgbString(52, 102, 51)
-        mode.green = TitleScreen.rgbString(89, 156, 93)
-        mode.buttonColor = mode.green
-        mode.buttonTextColor = 'white'
-        mode.snow = []
-        mode.snowR = 17
-        mode.count = 0
-        mode.title = mode.load_image('title.png')
-        mode.titleResized = mode.scale_image(mode.title, 0.4)
-        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
+    def app_started(self):
+        self.darkGreen = TitleScreen.rgbString(52, 102, 51)
+        self.green = TitleScreen.rgbString(89, 156, 93)
+        self.buttonColor = self.green
+        self.buttonTextColor = 'white'
+        self.snow = []
+        self.snowR = 17
+        self.count = 0
+        self.title = self.load_image('title.png')
+        self.titleResized = self.scale_image(self.title, 0.4)
+        self.background = self.load_image(BACKGROUND_IMAGE_PATH)
+        self.backgroundResized = self.scale_image(self.background, 0.5)
 
     def rgbString(r, g, b):
         return f'#{r:02x}{g:02x}{b:02x}'
 
-    def mouse_pressed(mode, event):
-        if ((mode.width/2-150 <= event.x <= mode.width/2+150) 
-            and (mode.height*2/3-50 <= event.y <= mode.height*2/3+50)):
-            mode.app.set_active_mode(mode.app.backgroundScreen)
-            mode.homeButtonColor = mode.green
+    def mouse_pressed(self, event):
+        if ((self.width/2-150 <= event.x <= self.width/2+150) 
+            and (self.height*2/3-50 <= event.y <= self.height*2/3+50)):
+            self.app.set_active_mode(self.app.backgroundScreen)
+            self.homeButtonColor = self.green
     
-    def mouse_moved(mode, event):
-        if ((mode.width/2-150 <= event.x <= mode.width/2+150) 
-            and (mode.height*2/3-50 <= event.y <= mode.height*2/3+50)
-            and (mode.buttonColor != 'dark green')):
-            mode.buttonColor = mode.darkGreen
-        elif (((event.x < mode.width/2-150) 
-            or (event.x > mode.width/2+150) 
-            or (event.y < mode.height*2/3-50) 
-            or (event.y > mode.height*2/3+50))
-            and (mode.buttonColor != 'dark green')):
-            mode.buttonColor = mode.green
+    def mouse_moved(self, event):
+        if ((self.width/2-150 <= event.x <= self.width/2+150) 
+            and (self.height*2/3-50 <= event.y <= self.height*2/3+50)
+            and (self.buttonColor != 'dark green')):
+            self.buttonColor = self.darkGreen
+        elif (((event.x < self.width/2-150) 
+            or (event.x > self.width/2+150) 
+            or (event.y < self.height*2/3-50) 
+            or (event.y > self.height*2/3+50))
+            and (self.buttonColor != 'dark green')):
+            self.buttonColor = self.green
 
-    def timer_fired(mode):
-        mode.count += 1
-        if (mode.count == 20):
-            random_x = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(random_x, 0))
-            mode.count = 0
+    def timer_fired(self):
+        self.count += 1
+        if (self.count == 20):
+            random_x = random.randrange(self.width)
+            self.snow.append(FallingSnow(random_x, 0))
+            self.count = 0
 
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snowball.fall()
 
-    def redraw_all(mode, canvas):
+    def redraw_all(self, canvas):
         # background
-        canvas.create_image(mode.width/2, mode.height/2, 
-                            image=ImageTk.PhotoImage(mode.backgroundResized))
+        canvas.create_image(self.width/2, self.height/2, 
+                            image=ImageTk.PhotoImage(self.backgroundResized))
         # snow
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snow_x, snow_y = snowball.x, snowball.y
-            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
-                            snow_x+mode.snowR, snow_y+mode.snowR,
+            canvas.create_oval(snow_x-self.snowR, snow_y-self.snowR, 
+                            snow_x+self.snowR, snow_y+self.snowR,
                             fill='white',
                             outline='')
         # title
-        canvas.create_image(mode.width/2+30, mode.height/3, 
-                            image=ImageTk.PhotoImage(mode.titleResized))
-        canvas.create_text(mode.width/2, mode.height/3+80,
+        canvas.create_image(self.width/2+30, self.height/3, 
+                            image=ImageTk.PhotoImage(self.titleResized))
+        canvas.create_text(self.width/2, self.height/3+80,
                             fill='firebrick4',
                             text='the Santa Maze Game', 
                             font='Baloo 50')
         # 'Let's Begin' button
-        canvas.create_rectangle(mode.width/2-150, mode.height*2/3-50,
-                            mode.width/2+150, mode.height*2/3+50,
-                            fill=mode.buttonColor, outline='')
-        canvas.create_text(mode.width/2, mode.height*2/3,
-                            fill=mode.buttonTextColor,
+        canvas.create_rectangle(self.width/2-150, self.height*2/3-50,
+                            self.width/2+150, self.height*2/3+50,
+                            fill=self.buttonColor, outline='')
+        canvas.create_text(self.width/2, self.height*2/3,
+                            fill=self.buttonTextColor,
                             text='Let\'s Begin', 
                             font='Baloo 45')
 
 class FallingSnow(Mode):
-    def __init__(mode, x, y):
-        mode.x = x
-        mode.y = y
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-    def fall(mode):
-        mode.y += 3
+    def fall(self):
+        self.y += 3
 
 class BackgroundScreen(Mode):
-    def app_started(mode):
-        mode.snow = []
-        mode.snowR = 20
-        mode.count = 0
-        mode.titleColor = 'gold'
-        mode.darkGreen = TitleScreen.rgbString(52, 102, 51)
-        mode.green = TitleScreen.rgbString(89, 156, 93)
-        mode.homeButtonColor = mode.nextButtonColor = mode.green
-        mode.homeButtonTextColor = mode.nextButtonTextColor = 'white'
-        mode.backgroundText = '''It's the last few hours of Christmas Eve, and 
+    def app_started(self):
+        self.snow = []
+        self.snowR = 20
+        self.count = 0
+        self.titleColor = 'gold'
+        self.darkGreen = TitleScreen.rgbString(52, 102, 51)
+        self.green = TitleScreen.rgbString(89, 156, 93)
+        self.homeButtonColor = self.nextButtonColor = self.green
+        self.homeButtonTextColor = self.nextButtonTextColor = 'white'
+        self.backgroundText = '''It's the last few hours of Christmas Eve, and 
 there are only a couple more presents left to be 
 delivered. Unfortunately, Santa’s reindeer just 
 contracted a novel XMAS-20 virus that can only 
@@ -127,88 +128,88 @@ bad memory by following the instructions on the
 next slide, and prove to the world that Santa 
 still has what it takes to deliver presents to 
 every last kid!'''
-        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
+        self.background = self.load_image(BACKGROUND_IMAGE_PATH)
+        self.backgroundResized = self.scale_image(self.background, 0.5)
 
-    def timer_fired(mode):
-        mode.count += 1
-        if (mode.count == 20):
-            random_x = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(random_x, 0))
-            mode.count = 0
+    def timer_fired(self):
+        self.count += 1
+        if (self.count == 20):
+            random_x = random.randrange(self.width)
+            self.snow.append(FallingSnow(random_x, 0))
+            self.count = 0
 
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snowball.fall()
 
-    def mouse_pressed(mode, event):
+    def mouse_pressed(self, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.app.set_active_mode(mode.app.titleScreen)
-            mode.homeButtonColor = mode.green
-        elif ((mode.width-150 <= event.x <= mode.width-50) 
+            self.app.set_active_mode(self.app.titleScreen)
+            self.homeButtonColor = self.green
+        elif ((self.width-150 <= event.x <= self.width-50) 
             and (50 <= event.y <= 100)):
-            mode.app.set_active_mode(mode.app.instructionsScreen)
-            mode.nextButtonColor = mode.green
+            self.app.set_active_mode(self.app.instructionsScreen)
+            self.nextButtonColor = self.green
     
-    def mouse_moved(mode, event):
+    def mouse_moved(self, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.homeButtonColor = mode.darkGreen
-        elif ((mode.width-150 <= event.x <= mode.width-50) 
+            self.homeButtonColor = self.darkGreen
+        elif ((self.width-150 <= event.x <= self.width-50) 
             and (50 <= event.y <= 100)):
-            mode.nextButtonColor = mode.darkGreen
+            self.nextButtonColor = self.darkGreen
         elif (((event.x < 50) or ((event.x > 150) 
-            and (event.x < mode.width-150)) or (event.x > mode.width-50))
+            and (event.x < self.width-150)) or (event.x > self.width-50))
             or ((event.y < 50) or (event.y > 100))):
-            mode.homeButtonColor = mode.nextButtonColor = mode.green
+            self.homeButtonColor = self.nextButtonColor = self.green
 
-    def redraw_all(mode, canvas):
+    def redraw_all(self, canvas):
         # background
-        canvas.create_image(mode.width/2, mode.height/2, 
-                            image=ImageTk.PhotoImage(mode.backgroundResized))
+        canvas.create_image(self.width/2, self.height/2, 
+                            image=ImageTk.PhotoImage(self.backgroundResized))
         # snow
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snow_x, snow_y = snowball.x, snowball.y
-            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
-                            snow_x+mode.snowR, snow_y+mode.snowR,
+            canvas.create_oval(snow_x-self.snowR, snow_y-self.snowR, 
+                            snow_x+self.snowR, snow_y+self.snowR,
                             fill='white',
                             outline='')
         # title
-        canvas.create_text(mode.width/2, mode.height/10,
-                            fill=mode.titleColor,
+        canvas.create_text(self.width/2, self.height/10,
+                            fill=self.titleColor,
                             text='Background', 
                             font=TITULO_FONTE)
         # 'Home' button
         canvas.create_rectangle(50, 50, 150, 100,
-                            fill=mode.homeButtonColor,
+                            fill=self.homeButtonColor,
                             outline='')
         canvas.create_text(100, 75,
-                            fill=mode.homeButtonTextColor,
+                            fill=self.homeButtonTextColor,
                             text='Home', 
                             font=TITULO_FONTE2)
         # 'Next' button
-        canvas.create_rectangle(mode.width-50, 50, mode.width-150, 100,
-                            fill=mode.nextButtonColor,
+        canvas.create_rectangle(self.width-50, 50, self.width-150, 100,
+                            fill=self.nextButtonColor,
                             outline='')
-        canvas.create_text(mode.width-100, 75,
-                            fill=mode.nextButtonTextColor,
+        canvas.create_text(self.width-100, 75,
+                            fill=self.nextButtonTextColor,
                             text='Next', 
                             font=TITULO_FONTE2)
         # background text
-        canvas.create_text(mode.width/2, mode.height/2-50,
+        canvas.create_text(self.width/2, self.height/2-50,
                             fill='gold',
-                            text=mode.backgroundText, 
+                            text=self.backgroundText, 
                             font='GB18030Bitmap 15')
 
 class InstructionsScreen(BackgroundScreen):
-    def app_started(mode):
-        mode.snow = []
-        mode.snowR = 20
-        mode.count = 0
-        mode.titleColor = 'gold'
-        mode.darkGreen = TitleScreen.rgbString(52, 102, 51)
-        mode.green = TitleScreen.rgbString(89, 156, 93)
-        mode.backButtonColor = mode.nextButtonColor = mode.green
-        mode.backButtonTextColor = mode.nextButtonTextColor = 'white'
-        mode.instructionsText = '''Navigate Santa's sleigh through the maze by using the 'Up', 'Down', 
+    def app_started(self):
+        self.snow = []
+        self.snowR = 20
+        self.count = 0
+        self.titleColor = 'gold'
+        self.darkGreen = TitleScreen.rgbString(52, 102, 51)
+        self.green = TitleScreen.rgbString(89, 156, 93)
+        self.backButtonColor = self.nextButtonColor = self.green
+        self.backButtonTextColor = self.nextButtonTextColor = 'white'
+        self.instructionsText = '''Navigate Santa's sleigh through the maze by using the 'Up', 'Down', 
 'Left', and 'Right' arrow keys and get him from the North Pole to 
 the first chimney in town as fast as you can. Every extra minute 
 you take, Santa will lose 10 presents from his initial 100!
@@ -229,92 +230,92 @@ Hints:
 
 Proceed to the next page to choose Santa’s sleigh and begin. 
 Hurry - you’re running out of time!'''
-        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
+        self.background = self.load_image(BACKGROUND_IMAGE_PATH)
+        self.backgroundResized = self.scale_image(self.background, 0.5)
 
-    def timer_fired(mode):
-        mode.count += 1
-        if (mode.count == 20):
-            random_x = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(random_x, 0))
-            mode.count = 0
+    def timer_fired(self):
+        self.count += 1
+        if (self.count == 20):
+            random_x = random.randrange(self.width)
+            self.snow.append(FallingSnow(random_x, 0))
+            self.count = 0
 
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snowball.fall()
 
-    def mouse_pressed(mode, event):
+    def mouse_pressed(self, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.app.set_active_mode(mode.app.backgroundScreen)
-            mode.backButtonColor = mode.green
-        elif ((mode.width-150 <= event.x <= mode.width-50) 
+            self.app.set_active_mode(self.app.backgroundScreen)
+            self.backButtonColor = self.green
+        elif ((self.width-150 <= event.x <= self.width-50) 
             and (50 <= event.y <= 100)):
-            mode.app.set_active_mode(mode.app.sleighScreen)
-            mode.nextButtonColor = mode.green
+            self.app.set_active_mode(self.app.sleighScreen)
+            self.nextButtonColor = self.green
     
-    def mouse_moved(mode, event):
+    def mouse_moved(self, event):
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.backButtonColor = mode.darkGreen
-        elif ((mode.width-150 <= event.x <= mode.width-50) 
+            self.backButtonColor = self.darkGreen
+        elif ((self.width-150 <= event.x <= self.width-50) 
             and (50 <= event.y <= 100)):
-            mode.nextButtonColor = mode.darkGreen
+            self.nextButtonColor = self.darkGreen
         elif (((event.x < 50) or ((event.x > 150) 
-            and (event.x < mode.width-150)) or (event.x > mode.width-50))
+            and (event.x < self.width-150)) or (event.x > self.width-50))
             or ((event.y < 50) or (event.y > 100))):
-            mode.backButtonColor = mode.nextButtonColor = mode.green
+            self.backButtonColor = self.nextButtonColor = self.green
 
-    def redraw_all(mode, canvas):
+    def redraw_all(self, canvas):
         # background
-        canvas.create_image(mode.width/2, mode.height/2, 
-                            image=ImageTk.PhotoImage(mode.backgroundResized))
+        canvas.create_image(self.width/2, self.height/2, 
+                            image=ImageTk.PhotoImage(self.backgroundResized))
         # snow
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snow_x, snow_y = snowball.x, snowball.y
-            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
-                            snow_x+mode.snowR, snow_y+mode.snowR,
+            canvas.create_oval(snow_x-self.snowR, snow_y-self.snowR, 
+                            snow_x+self.snowR, snow_y+self.snowR,
                             fill='white',
                             outline='')
         # title
-        canvas.create_text(mode.width/2, mode.height/10,
-                            fill=mode.titleColor,
+        canvas.create_text(self.width/2, self.height/10,
+                            fill=self.titleColor,
                             text='Instructions', 
                             font=TITULO_FONTE)
         # 'Back' button
         canvas.create_rectangle(50, 50, 150, 100,
-                            fill=mode.backButtonColor,
+                            fill=self.backButtonColor,
                             outline='')
         canvas.create_text(100, 75,
-                            fill=mode.backButtonTextColor,
+                            fill=self.backButtonTextColor,
                             text='Back', 
                             font=TITULO_FONTE2)
         # 'Next' button
-        canvas.create_rectangle(mode.width-50, 50, mode.width-150, 100,
-                            fill=mode.nextButtonColor,
+        canvas.create_rectangle(self.width-50, 50, self.width-150, 100,
+                            fill=self.nextButtonColor,
                             outline='')
-        canvas.create_text(mode.width-100, 75,
-                            fill=mode.nextButtonTextColor,
+        canvas.create_text(self.width-100, 75,
+                            fill=self.nextButtonTextColor,
                             text='Next', 
                             font=TITULO_FONTE2)
         # instructions text
-        canvas.create_text(mode.width/2, mode.height/2-40,
+        canvas.create_text(self.width/2, self.height/2-40,
                             fill='gold',
-                            text=mode.instructionsText, 
+                            text=self.instructionsText, 
                             font='GB18030Bitmap 12')
 
 class SleighScreen(BackgroundScreen):
-    def app_started(mode):
-        mode.snow = []
-        mode.snowR = 20
-        mode.count = 0
-        mode.titleColor = 'gold'
-        mode.darkGreen = TitleScreen.rgbString(52, 102, 51)
-        mode.green = TitleScreen.rgbString(89, 156, 93)
-        mode.backButtonColor = mode.nextButtonColor = mode.green
-        mode.backButtonTextColor = mode.nextButtonTextColor = 'white'
-        mode.mode1ButtonColor = mode.mode2ButtonColor = mode.mode3ButtonColor = mode.green
-        mode.mode1ButtonTextColor = mode.mode2ButtonTextColor = mode.mode3ButtonTextColor = 'white'
-        mode.mode1Title = '''                Sleigh 1:
+    def app_started(self):
+        self.snow = []
+        self.snowR = 20
+        self.count = 0
+        self.titleColor = 'gold'
+        self.darkGreen = TitleScreen.rgbString(52, 102, 51)
+        self.green = TitleScreen.rgbString(89, 156, 93)
+        self.backButtonColor = self.nextButtonColor = self.green
+        self.backButtonTextColor = self.nextButtonTextColor = 'white'
+        self.mode1ButtonColor = self.mode2ButtonColor = self.mode3ButtonColor = self.green
+        self.mode1ButtonTextColor = self.mode2ButtonTextColor = self.mode3ButtonTextColor = 'white'
+        self.mode1Title = '''                Sleigh 1:
 No Presents, Just Vibes'''
-        mode.mode1Text = '''Santa accidentally forgot 
+        self.mode1Text = '''Santa accidentally forgot 
 all his presents back at the North 
 Pole. He has decided to cut his 
 losses and just vibe his way to 
@@ -327,9 +328,9 @@ sometimes Santa just needs to
 prioritize his own self care. 
 Hopefully he can come up with a 
 good excuse on the way though…'''
-        mode.mode2Title = '''         Sleigh 2:
+        self.mode2Title = '''         Sleigh 2:
 Will Pay To Take'''
-        mode.mode2Text = '''Santa Will Pay you To Take 
+        self.mode2Text = '''Santa Will Pay you To Take 
 this sleigh. Pros: not even the 
 Grinch can be bothered by this 
 sleigh, so he will not be chasing 
@@ -342,9 +343,9 @@ make his visibility range Bigger
 by pressing the 'b' key. Make 
 his visibility range Smaller by 
 pressing the 's' key.'''
-        mode.mode3Title = '''              Sleigh 3:
+        self.mode3Title = '''              Sleigh 3:
 2021 Christmas Corvette'''
-        mode.mode3Text = '''Santa is now “that car guy,” 
+        self.mode3Text = '''Santa is now “that car guy,” 
 and has finally invested in the 
 shiniest! newest! cleanest! 2021 
 Christmas Corvette. This sleigh of 
@@ -357,282 +358,263 @@ because he’s a bad driver and
 doesn’t want to scrape her, but 
 also because she’ll attract …the 
 Grinch! (who will steal his presents)'''
-        mode.sleigh1 = mode.load_image('sleigh1.png')
-        mode.sleigh1Resized = mode.scale_image(mode.sleigh1, 0.1)
-        mode.sleigh2 = mode.load_image('sleigh2.png')
-        mode.sleigh2Resized = mode.scale_image(mode.sleigh2, 0.1)
-        mode.sleigh3 = mode.load_image('sleigh3.png')
-        mode.sleigh3Resized = mode.scale_image(mode.sleigh3, 0.1)
-        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
+        self.sleigh1 = self.load_image('sleigh1.png')
+        self.sleigh1Resized = self.scale_image(self.sleigh1, 0.1)
+        self.sleigh2 = self.load_image('sleigh2.png')
+        self.sleigh2Resized = self.scale_image(self.sleigh2, 0.1)
+        self.sleigh3 = self.load_image('sleigh3.png')
+        self.sleigh3Resized = self.scale_image(self.sleigh3, 0.1)
+        self.background = self.load_image(BACKGROUND_IMAGE_PATH)
+        self.backgroundResized = self.scale_image(self.background, 0.5)
 
-    def timer_fired(mode):
-        mode.count += 1
-        if (mode.count == 20):
-            random_x = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(random_x, 0))
-            mode.count = 0
+    def timer_fired(self):
+        self.count += 1
+        if (self.count == 20):
+            random_x = random.randrange(self.width)
+            self.snow.append(FallingSnow(random_x, 0))
+            self.count = 0
 
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snowball.fall()
+    
+    def mouse_moved(self, event):
+        buttons = [
+            # nomeDoAtributo, x1, y1, x2, y2
+            ("backButtonColor", 50, 50, 150, 100),
+            ("nextButtonColor", self.width-150, 50, self.width-50, 100),
+            ("mode1ButtonColor", self.width/6-80, self.height*9/10-40, self.width/6+80, self.height*9/10+40),
+            ("mode2ButtonColor", self.width/2-80, self.height*9/10-40, self.width/2+80, self.height*9/10+40),
+            ("mode3ButtonColor", self.width*5/6-80, self.height*9/10-40, self.width*5/6+80, self.height*9/10+40),
+        ]
 
-    def mouse_moved(mode, event):
-        # 'Back' and 'Home' button toggle
-        if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.backButtonColor = mode.darkGreen
-        elif ((mode.width-150 <= event.x <= mode.width-50) 
-            and (50 <= event.y <= 100)):
-            mode.nextButtonColor = mode.darkGreen
-        elif (event.x < 50 or (event.x > 150 and event.x < mode.width-150) 
-            or event.x > mode.width-50 or event.y < 50 or event.y > 100):
-            mode.backButtonColor = mode.nextButtonColor = mode.green
-        # 'Play Sleigh 1' button toggle
-        if ((mode.width/6-80 <= event.x <= mode.width/6+80) 
-            and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
-            mode.mode1ButtonColor = mode.darkGreen
-        elif ((event.x < mode.width/4-80) or (event.x > mode.width/4+80)
-            or (event.y < mode.height*9/10-40) 
-            or (event.y < mode.height*9/10+40)):
-            mode.mode1ButtonColor = mode.green
-        # 'Play Sleigh 2' button toggle
-        if ((mode.width/2-80 <= event.x <= mode.width/2+80) 
-            and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
-            mode.mode2ButtonColor = mode.darkGreen
-        elif ((event.x < mode.width/2-80) or (event.x > mode.width/2+80)
-            or (event.y < mode.height*9/10-40) 
-            or (event.y < mode.height*9/10+40)):
-            mode.mode2ButtonColor = mode.green
-        # 'Play Sleigh 3' button toggle
-        if ((mode.width*5/6-80 <= event.x <= mode.width*5/6+80) 
-            and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
-            mode.mode3ButtonColor = mode.darkGreen
-        elif ((event.x < mode.width*3/4-80) or (event.x > mode.width*3/4+80)
-            or (event.y < mode.height*9/10-40) 
-            or (event.y < mode.height*9/10+40)):
-            mode.mode3ButtonColor = mode.green
+        for attr, x1, y1, x2, y2 in buttons:
+            if x1 <= event.x <= x2 and y1 <= event.y <= y2:
+                setattr(self, attr, self.darkGreen)
+            else:
+                setattr(self, attr, self.green)
 
-    def mouse_pressed(mode, event):
+    def mouse_pressed(self, event):
         # 'Back' button
         if ((50 <= event.x <= 150) and (50 <= event.y <= 100)):
-            mode.app.set_active_mode(mode.app.instructionsScreen)
-            mode.backButtonColor = mode.green
+            self.app.set_active_mode(self.app.instructionsScreen)
+            self.backButtonColor = self.green
         # 'Home' button
-        elif ((mode.width-150 <= event.x <= mode.width-50) 
+        elif ((self.width-150 <= event.x <= self.width-50) 
             and (50 <= event.y <= 100)):
-            mode.app.set_active_mode(mode.app.titleScreen)
-            mode.nextButtonColor = mode.green
+            self.app.set_active_mode(self.app.titleScreen)
+            self.nextButtonColor = self.green
         # 'Play Sleigh 1' button
-        elif ((mode.width/6-80 <= event.x <= mode.width/6+80) 
-            and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
-            mode.app.timeSec = 0
-            mode.app.timeMin = 0
-            mode.app.set_active_mode(mode.app.maze) 
-            mode.mode1ButtonColor = mode.green
+        elif ((self.width/6-80 <= event.x <= self.width/6+80) 
+            and (self.height*9/10-40 <= event.y <= self.height*9/10+40)):
+            self.app.timeSec = 0
+            self.app.timeMin = 0
+            self.app.set_active_mode(self.app.maze) 
+            self.mode1ButtonColor = self.green
         # 'Play Sleigh 2' button
-        elif ((mode.width/2-80 <= event.x <= mode.width/2+80) 
-            and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
-            mode.app.presents = 100
-            mode.app.set_active_mode(mode.app.radiusMode) 
-            mode.mode2ButtonColor = mode.green
+        elif ((self.width/2-80 <= event.x <= self.width/2+80) 
+            and (self.height*9/10-40 <= event.y <= self.height*9/10+40)):
+            self.app.presents = 100
+            self.app.set_active_mode(self.app.radiusMode) 
+            self.mode2ButtonColor = self.green
         # 'Play Sleigh 3' button
-        elif ((mode.width*5/6-80 <= event.x <= mode.width*5/6+80) 
-            and (mode.height*9/10-40 <= event.y <= mode.height*9/10+40)):
-            mode.app.presents = 100
-            mode.app.set_active_mode(mode.app.grinchMode) 
-            mode.mode3ButtonColor = mode.green
+        elif ((self.width*5/6-80 <= event.x <= self.width*5/6+80) 
+            and (self.height*9/10-40 <= event.y <= self.height*9/10+40)):
+            self.app.presents = 100
+            self.app.set_active_mode(self.app.grinchMode) 
+            self.mode3ButtonColor = self.green
 
-    def redraw_all(mode, canvas):
+    def redraw_all(self, canvas):
         # background
-        canvas.create_image(mode.width/2, mode.height/2, 
-                            image=ImageTk.PhotoImage(mode.backgroundResized))
+        canvas.create_image(self.width/2, self.height/2, 
+                            image=ImageTk.PhotoImage(self.backgroundResized))
         # snow
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snow_x, snow_y = snowball.x, snowball.y
-            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
-                            snow_x+mode.snowR, snow_y+mode.snowR,
+            canvas.create_oval(snow_x-self.snowR, snow_y-self.snowR, 
+                            snow_x+self.snowR, snow_y+self.snowR,
                             fill='white',
                             outline='')
         # title
-        canvas.create_text(mode.width/2, mode.height/10,
-                            fill=mode.titleColor,
+        canvas.create_text(self.width/2, self.height/10,
+                            fill=self.titleColor,
                             text='Choose Your Sleigh', 
                             font=TITULO_FONTE)
         # 'Back' button
         canvas.create_rectangle(50, 50, 150, 100,
-                            fill=mode.backButtonColor,
+                            fill=self.backButtonColor,
                             outline='')
         canvas.create_text(100, 75,
-                            fill=mode.backButtonTextColor,
+                            fill=self.backButtonTextColor,
                             text='Back', 
                             font=TITULO_FONTE2)
         # 'Home' button
-        canvas.create_rectangle(mode.width-50, 50, mode.width-150, 100,
-                            fill=mode.nextButtonColor,
+        canvas.create_rectangle(self.width-50, 50, self.width-150, 100,
+                            fill=self.nextButtonColor,
                             outline='')
-        canvas.create_text(mode.width-100, 75,
-                            fill=mode.nextButtonTextColor,
+        canvas.create_text(self.width-100, 75,
+                            fill=self.nextButtonTextColor,
                             text='Home', 
                             font=TITULO_FONTE2)
         # Sleigh 1
-        canvas.create_rectangle(mode.width/6-150, mode.height/2-20, 
-                            mode.width/6+130, mode.height/2+260,
+        canvas.create_rectangle(self.width/6-150, self.height/2-20, 
+                            self.width/6+130, self.height/2+260,
                             fill='white',
                             outline='')
-        canvas.create_rectangle(mode.width/6-80, mode.height*9/10-40, 
-                            mode.width/6+80, mode.height*9/10+40,
-                            fill=mode.mode1ButtonColor,
+        canvas.create_rectangle(self.width/6-80, self.height*9/10-40, 
+                            self.width/6+80, self.height*9/10+40,
+                            fill=self.mode1ButtonColor,
                             outline='')
-        canvas.create_text(mode.width/6, mode.height*9/10,
-                            fill=mode.mode1ButtonTextColor,
+        canvas.create_text(self.width/6, self.height*9/10,
+                            fill=self.mode1ButtonTextColor,
                             text='Sleigh 1', 
                             font=TITULO_FONTE3)
-        canvas.create_text(mode.width/6, mode.height/5,
+        canvas.create_text(self.width/6, self.height/5,
                             fill='gold',
-                            text=mode.mode1Title, 
+                            text=self.mode1Title, 
                             font=TITULO_FONTE3)
-        canvas.create_text(mode.width/6, mode.height*3/5+40,
+        canvas.create_text(self.width/6, self.height*3/5+40,
                             fill='black',
-                            text=mode.mode1Text, 
+                            text=self.mode1Text, 
                             font=TITULO_FONTE4)
-        canvas.create_image(mode.width/6, mode.height*2/5-25, 
-                            image=ImageTk.PhotoImage(mode.sleigh1Resized))
+        canvas.create_image(self.width/6, self.height*2/5-25, 
+                            image=ImageTk.PhotoImage(self.sleigh1Resized))
         # Sleigh 2
-        canvas.create_rectangle(mode.width/2-150, mode.height/2-20, 
-                            mode.width/2+130, mode.height/2+260,
+        canvas.create_rectangle(self.width/2-150, self.height/2-20, 
+                            self.width/2+130, self.height/2+260,
                             fill='white',
                             outline='')
-        canvas.create_rectangle(mode.width/2-80, mode.height*9/10-40, 
-                            mode.width/2+80, mode.height*9/10+40,
-                            fill=mode.mode2ButtonColor,
+        canvas.create_rectangle(self.width/2-80, self.height*9/10-40, 
+                            self.width/2+80, self.height*9/10+40,
+                            fill=self.mode2ButtonColor,
                             outline='')
-        canvas.create_text(mode.width/2, mode.height*9/10,
-                            fill=mode.mode2ButtonTextColor,
+        canvas.create_text(self.width/2, self.height*9/10,
+                            fill=self.mode2ButtonTextColor,
                             text='Sleigh 2', 
                             font=TITULO_FONTE3)
-        canvas.create_text(mode.width/2, mode.height/5,
+        canvas.create_text(self.width/2, self.height/5,
                             fill='gold',
-                            text=mode.mode2Title, 
+                            text=self.mode2Title, 
                             font=TITULO_FONTE3)
-        canvas.create_text(mode.width/2, mode.height*3/5+40,
+        canvas.create_text(self.width/2, self.height*3/5+40,
                             fill='black',
-                            text=mode.mode2Text, 
+                            text=self.mode2Text, 
                             font=TITULO_FONTE4)
-        canvas.create_image(mode.width/2, mode.height*2/5-25, 
-                            image=ImageTk.PhotoImage(mode.sleigh2Resized))
+        canvas.create_image(self.width/2, self.height*2/5-25, 
+                            image=ImageTk.PhotoImage(self.sleigh2Resized))
         # Sleigh 3
-        canvas.create_rectangle(mode.width*5/6-160, mode.height/2-20, 
-                            mode.width*5/6+140, mode.height/2+260,
+        canvas.create_rectangle(self.width*5/6-160, self.height/2-20, 
+                            self.width*5/6+140, self.height/2+260,
                             fill='white',
                             outline='')
-        canvas.create_rectangle(mode.width*5/6-80, mode.height*9/10-40, 
-                            mode.width*5/6+80, mode.height*9/10+40,
-                            fill=mode.mode3ButtonColor,
+        canvas.create_rectangle(self.width*5/6-80, self.height*9/10-40, 
+                            self.width*5/6+80, self.height*9/10+40,
+                            fill=self.mode3ButtonColor,
                             outline='')
-        canvas.create_text(mode.width*5/6, mode.height*9/10,
-                            fill=mode.mode3ButtonTextColor,
+        canvas.create_text(self.width*5/6, self.height*9/10,
+                            fill=self.mode3ButtonTextColor,
                             text='Sleigh 3', 
                             font=TITULO_FONTE3)
-        canvas.create_text(mode.width*5/6, mode.height/5,
+        canvas.create_text(self.width*5/6, self.height/5,
                             fill='gold',
-                            text=mode.mode3Title, 
+                            text=self.mode3Title, 
                             font=TITULO_FONTE3)
-        canvas.create_text(mode.width*5/6, mode.height*3/5+40,
+        canvas.create_text(self.width*5/6, self.height*3/5+40,
                             fill='black',
-                            text=mode.mode3Text, 
+                            text=self.mode3Text, 
                             font=TITULO_FONTE4)
-        canvas.create_image(mode.width*5/6, mode.height*2/5-25, 
-                            image=ImageTk.PhotoImage(mode.sleigh3Resized))
+        canvas.create_image(self.width*5/6, self.height*2/5-25, 
+                            image=ImageTk.PhotoImage(self.sleigh3Resized))
 
 class FinalScreen(SleighScreen):
-    def app_started(mode):
-        mode.snow = []
-        mode.snowR = 20
-        mode.count = 0
-        mode.titleColor = 'gold'
-        mode.darkGreen = TitleScreen.rgbString(52, 102, 51)
-        mode.green = TitleScreen.rgbString(89, 156, 93)
-        mode.playAgainButtonColor = mode.green
-        mode.playAgainButtonTextColor = 'white'
-        mode.homeButtonColor = mode.green
-        mode.homeButtonTextColor = 'white'
-        mode.background = mode.load_image(BACKGROUND_IMAGE_PATH)
-        mode.backgroundResized = mode.scale_image(mode.background, 0.5)
+    def app_started(self):
+        self.snow = []
+        self.snowR = 20
+        self.count = 0
+        self.titleColor = 'gold'
+        self.darkGreen = TitleScreen.rgbString(52, 102, 51)
+        self.green = TitleScreen.rgbString(89, 156, 93)
+        self.playAgainButtonColor = self.green
+        self.playAgainButtonTextColor = 'white'
+        self.homeButtonColor = self.green
+        self.homeButtonTextColor = 'white'
+        self.background = self.load_image(BACKGROUND_IMAGE_PATH)
+        self.backgroundResized = self.scale_image(self.background, 0.5)
 
-    def timer_fired(mode):
-        mode.count += 1
-        if (mode.count == 20):
-            random_x = random.randrange(mode.width)
-            mode.snow.append(FallingSnow(random_x, 0))
-            mode.count = 0
+    def timer_fired(self):
+        self.count += 1
+        if (self.count == 20):
+            random_x = random.randrange(self.width)
+            self.snow.append(FallingSnow(random_x, 0))
+            self.count = 0
 
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snowball.fall()
 
-    def mouse_moved(mode, event):
-        if ((mode.width/2-200 <= event.x <= mode.width/2+200) 
-            and (mode.height*7/10-50 <= event.y <= mode.height*7/10+50)):
-            mode.playAgainButtonColor = mode.darkGreen
-        elif ((event.x < mode.width/2-200) or (event.x > mode.width/2+200)
-            or (event.y < mode.height*7/10-50) 
-            or (event.y > mode.height*7/10+50)):
-            mode.playAgainButtonColor = mode.green
-        if ((mode.width/2-50 <= event.x <= mode.width/2+50) 
-            and (mode.height*9/10-25 <= event.y <= mode.height*9/10+25)):
-            mode.homeButtonColor = mode.darkGreen
-        elif ((event.x < mode.width/2-50) or (event.x > mode.width/2+50)
-            or (event.y < mode.height*9/10-25) 
-            or (event.y > mode.height*9/10+25)):
-            mode.homeButtonColor = mode.green
+    def mouse_moved(self, event):
+        if ((self.width/2-200 <= event.x <= self.width/2+200) 
+            and (self.height*7/10-50 <= event.y <= self.height*7/10+50)):
+            self.playAgainButtonColor = self.darkGreen
+        elif ((event.x < self.width/2-200) or (event.x > self.width/2+200)
+            or (event.y < self.height*7/10-50) 
+            or (event.y > self.height*7/10+50)):
+            self.playAgainButtonColor = self.green
+        if ((self.width/2-50 <= event.x <= self.width/2+50) 
+            and (self.height*9/10-25 <= event.y <= self.height*9/10+25)):
+            self.homeButtonColor = self.darkGreen
+        elif ((event.x < self.width/2-50) or (event.x > self.width/2+50)
+            or (event.y < self.height*9/10-25) 
+            or (event.y > self.height*9/10+25)):
+            self.homeButtonColor = self.green
 
-    def mouse_pressed(mode, event):
+    def mouse_pressed(self, event):
         # 'Play Again' button
-        if ((mode.width/2-200 <= event.x <= mode.width/2+200) 
-            and (mode.height*7/10-50 <= event.y <= mode.height*7/10+50)):
-            mode.app.presents = 0
-            mode.app.set_active_mode(mode.app.sleighScreen)
-            mode.playAgainButtonColor = mode.green
+        if ((self.width/2-200 <= event.x <= self.width/2+200) 
+            and (self.height*7/10-50 <= event.y <= self.height*7/10+50)):
+            self.app.presents = 0
+            self.app.set_active_mode(self.app.sleighScreen)
+            self.playAgainButtonColor = self.green
         # 'Home' button
-        elif ((mode.width/2-50 <= event.x <= mode.width/2+50) 
-            and (mode.height*9/10-25 <= event.y <= mode.height*9/10+25)):
-            mode.app.presents = 0
-            mode.app.set_active_mode(mode.app.titleScreen)
-            mode.homeButtonColor = mode.green
+        elif ((self.width/2-50 <= event.x <= self.width/2+50) 
+            and (self.height*9/10-25 <= event.y <= self.height*9/10+25)):
+            self.app.presents = 0
+            self.app.set_active_mode(self.app.titleScreen)
+            self.homeButtonColor = self.green
 
-    def redraw_all(mode, canvas):
+    def redraw_all(self, canvas):
         # background
-        canvas.create_image(mode.width/2, mode.height/2, 
-                            image=ImageTk.PhotoImage(mode.backgroundResized))
+        canvas.create_image(self.width/2, self.height/2, 
+                            image=ImageTk.PhotoImage(self.backgroundResized))
         # snow
-        for snowball in mode.snow:
+        for snowball in self.snow:
             snow_x, snow_y = snowball.x, snowball.y
-            canvas.create_oval(snow_x-mode.snowR, snow_y-mode.snowR, 
-                            snow_x+mode.snowR, snow_y+mode.snowR,
+            canvas.create_oval(snow_x-self.snowR, snow_y-self.snowR, 
+                            snow_x+self.snowR, snow_y+self.snowR,
                             fill='white',
                             outline='')
         # title
-        canvas.create_text(mode.width/2, mode.height*3/10,
-                            fill=mode.titleColor,
+        canvas.create_text(self.width/2, self.height*3/10,
+                            fill=self.titleColor,
                             text='Congrats!', 
                             font='Baloo 90')
-        canvas.create_text(mode.width/2, mode.height*4/10,
-                            fill=mode.titleColor,
-                            text=f'You successfully delivered {int(mode.app.finalPresents)} presents.', 
+        canvas.create_text(self.width/2, self.height*4/10,
+                            fill=self.titleColor,
+                            text=f'You successfully delivered {int(self.app.finalPresents)} presents.', 
                             font='Baloo 40')
         # 'Play Again' button
-        canvas.create_rectangle(mode.width/2-200, mode.height*7/10-50, 
-                            mode.width/2+200, mode.height*7/10+50,
-                            fill=mode.playAgainButtonColor,
+        canvas.create_rectangle(self.width/2-200, self.height*7/10-50, 
+                            self.width/2+200, self.height*7/10+50,
+                            fill=self.playAgainButtonColor,
                             outline='')
-        canvas.create_text(mode.width/2, mode.height*7/10,
-                            fill=mode.playAgainButtonTextColor,
+        canvas.create_text(self.width/2, self.height*7/10,
+                            fill=self.playAgainButtonTextColor,
                             text='Play Again', 
                             font='Baloo 40')
         # 'Home' button
-        canvas.create_rectangle(mode.width/2-50, mode.height*9/10-25, 
-                            mode.width/2+50, mode.height*9/10+25,
-                            fill=mode.homeButtonColor,
+        canvas.create_rectangle(self.width/2-50, self.height*9/10-25, 
+                            self.width/2+50, self.height*9/10+25,
+                            fill=self.homeButtonColor,
                             outline='')
-        canvas.create_text(mode.width/2, mode.height*9/10,
-                            fill=mode.homeButtonTextColor,
+        canvas.create_text(self.width/2, self.height*9/10,
+                            fill=self.homeButtonTextColor,
                             text='Home', 
                             font=TITULO_FONTE2)
