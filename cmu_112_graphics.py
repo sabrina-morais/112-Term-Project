@@ -191,11 +191,11 @@ def get_hash(obj):
 class WrappedCanvas(Canvas):
     # Enforces MVC: no drawing outside calls to redraw_all
     # Logs draw calls (for autograder) in canvas.loggedDrawingCalls
-    def __init__(wrapped_canvas, app):
-        wrapped_canvas.loggedDrawingCalls = [ ]
-        wrapped_canvas.log_drawing_calls = True
-        wrapped_canvas.inRedrawAll = False
-        wrapped_canvas.app = app
+    def __init__(self, app):
+        self.loggedDrawingCalls = [ ]
+        self.log_drawing_calls = True
+        self.inRedrawAll = False
+        self.app = app
         super().__init__(app._root, width=app.width, height=app.height)
 
     def log(self, method_name, args, kwargs):
@@ -248,47 +248,47 @@ class App(object):
     ####################################
     # User Methods:
     ####################################
-    def redraw_all(app, canvas): pass      # draw (view) the model in the canvas
-    def app_started(app): pass           # initialize the model (app.xyz)
-    def app_stopped(app): pass           # cleanup after app is done running
-    def key_pressed(app, event): pass    # use event.key
-    def key_released(app, event): pass   # use event.key
-    def mouse_pressed(app, event): pass  # use event.x and event.y
-    def mouse_released(app, event): pass # use event.x and event.y
-    def mouse_moved(app, event): pass    # use event.x and event.y
-    def mouse_dragged(app, event): pass  # use event.x and event.y
-    def timer_fired(app): pass           # respond to timer events
-    def size_changed(app): pass          # respond to window size changes
+    def redraw_all(self, canvas): pass      # draw (view) the model in the canvas
+    def app_started(self): pass           # initialize the model (app.xyz)
+    def app_stopped(self): pass           # cleanup after app is done running
+    def key_pressed(self, event): pass    # use event.key
+    def key_released(self, event): pass   # use event.key
+    def mouse_pressed(self, event): pass  # use event.x and event.y
+    def mouse_released(self, event): pass # use event.x and event.y
+    def mouse_moved(self, event): pass    # use event.x and event.y
+    def mouse_dragged(self, event): pass  # use event.x and event.y
+    def timer_fired(self): pass           # respond to timer events
+    def size_changed(self): pass          # respond to window size changes
 
     ####################################
     # Implementation:
     ####################################
 
-    def __init__(app, width=300, height=300, x=0, y=0, title=None, autorun=True, mvc_check=True, log_drawing_calls=True):
-        app.winx, app.winy, app.width, app.height = x, y, width, height
-        app.timer_delay = 100     # milliseconds
-        app.mouse_moved_delay = 50 # ditto
-        app._title = title
-        app._mvc_check = mvc_check
-        app._log_drawing_calls = log_drawing_calls
-        app._running = app._paused = False
-        app._mouse_pressed_outside_window = False
-        if autorun: app.run()
+    def __init__(self, width=300, height=300, x=0, y=0, title=None, autorun=True, mvc_check=True, log_drawing_calls=True):
+        self.winx, self.winy, self.width, self.height = x, y, width, height
+        self.timer_delay = 100     # milliseconds
+        self.mouse_moved_delay = 50 # ditto
+        self._title = title
+        self._mvc_check = mvc_check
+        self._log_drawing_calls = log_drawing_calls
+        self._running = self._paused = False
+        self._mouse_pressed_outside_window = False
+        if autorun: self.run()
 
-    def set_size(app, width, height):
-        app._root.geometry(f'{width}x{height}')
+    def set_size(self, width, height):
+        self._root.geometry(f'{width}x{height}')
 
-    def set_position(app, x, y):
-        app._root.geometry(f'+{x}+{y}')
+    def set_position(self, x, y):
+        self._root.geometry(f'+{x}+{y}')
 
-    def show_message(app, message):
-        messagebox.showinfo('show_message', message, parent=app._root)
+    def show_message(self, message):
+        messagebox.showinfo('show_message', message, parent=self._root)
 
-    def get_user_input(app, prompt):
+    def get_user_input(self, prompt):
         return simpledialog.askstring('get_user_input', prompt)
 
-    def load_image(app, path=None):
-        if (app._canvas.inRedrawAll):
+    def load_image(self, path=None):
+        if (self._canvas.inRedrawAll):
             raise RuntimeError('Cannot call load_image in redraw_all')
 
         if (path is None):
@@ -308,43 +308,43 @@ class App(object):
 
         return image
 
-    def scale_image(app, image, scale, antialias=False):
+    def scale_image(self, image, scale, antialias=False):
         # antialiasing is higher-quality but slower
         resample = Image.ANTIALIAS if antialias else Image.NEAREST
         return image.resize((round(image.width*scale), round(image.height*scale)), resample=resample)
 
-    def get_snapshot(app):
-        app._show_root_window()
-        x0 = app._root.winfo_rootx() + app._canvas.winfo_x()
-        y0 = app._root.winfo_rooty() + app._canvas.winfo_y()
-        result = ImageGrabber.grab((x0,y0,x0+app.width,y0+app.height))
+    def get_snapshot(self):
+        self._show_root_window()
+        x0 = self._root.winfo_rootx() + self._canvas.winfo_x()
+        y0 = self._root.winfo_rooty() + self._canvas.winfo_y()
+        result = ImageGrabber.grab((x0,y0,x0+self.width,y0+self.height))
         return result
 
-    def save_snapshot(app):
+    def save_snapshot(self):
         path = filedialog.asksaveasfilename(initialdir=os.getcwd(), title='Select file: ',filetypes = (('png files','*.png'),('all files','*.*')))
         if (path):
             # defer call to let filedialog close (and not grab those pixels)
             if (not path.endswith('.png')): path += '.png'
-            app._deferred_method_call(after_id='save_snapshot', after_delay=0, after_fn=lambda:app.get_snapshot().save(path))
+            self._deferred_method_call(after_id='save_snapshot', after_delay=0, after_fn=lambda:self.get_snapshot().save(path))
 
-    def _toggle_paused(app):
-        app._paused = not app._paused
+    def _toggle_paused(self):
+        self._paused = not self._paused
 
-    def quit(app):
-        app._running = False
-        app._root.quit() # break out of root.mainloop() without closing window!
+    def quit(self):
+        self._running = False
+        self._root.quit() # break out of root.mainloop() without closing window!
 
-    def __setattr__(app, attr, val):
-        d = app.__dict__
+    def __setattr__(self, attr, val):
+        d = self.__dict__
         d[attr] = val
         canvas = d.get('_canvas', None)
         if (d.get('running', False) and
             d.get('mvc_check', False) and
             (canvas is not None) and
             canvas.inRedrawAll):
-            app._mvc_violation(f'you may not change app.{attr} in the model while in redraw_all (the view)')
+            self._mvc_violation(f'you may not change app.{attr} in the model while in redraw_all (the view)')
 
-    def _print_user_traceback(app, exception, tb):
+    def _print_user_traceback(self, exception, tb):
         stack = traceback.extract_tb(tb)
         lines = traceback.format_list(stack)
         in_redraw_all_wrapper = False
@@ -390,53 +390,53 @@ class App(object):
                 app.show_message('Exception: {}\nClick ok then see console for details.'.format(e))
         return m
 
-    def _method_is_overridden(app, method_name):
-        return (getattr(type(app), method_name) is not getattr(App, method_name))
+    def _method_is_overridden(self, method_name):
+        return (getattr(type(self), method_name) is not getattr(App, method_name))
 
-    def _mvc_violation(app, err_msg):
-        app._running = False
+    def _mvc_violation(self, err_msg):
+        self._running = False
         raise RuntimeError('MVC Violation: ' + err_msg)
 
     @_safe_method
-    def _redraw_all_wrapper(app):
-        if (not app._running): return
-        if ('deferredRedrawAll' in app._after_id_map): return # wait for pending call
-        app._canvas.inRedrawAll = True
-        app._canvas.delete(ALL)
-        width,outline = (10,'red') if app._paused else (0,'white')
-        app._canvas.create_rectangle(0, 0, app.width, app.height, fill='white', width=width, outline=outline)
-        app._canvas.loggedDrawingCalls = [ ]
-        app._canvas.log_drawing_calls = app._log_drawing_calls
-        hash1 = get_hash(app) if app._mvc_check else None
+    def _redraw_all_wrapper(self):
+        if (not self._running): return
+        if ('deferredRedrawAll' in self._after_id_map): return # wait for pending call
+        self._canvas.inRedrawAll = True
+        self._canvas.delete(ALL)
+        width,outline = (10,'red') if self._paused else (0,'white')
+        self._canvas.create_rectangle(0, 0, self.width, self.height, fill='white', width=width, outline=outline)
+        self._canvas.loggedDrawingCalls = [ ]
+        self._canvas.log_drawing_calls = self._log_drawing_calls
+        hash1 = get_hash(self) if self._mvc_check else None
         try:
-            app.redraw_all(app._canvas)
-            hash2 = get_hash(app) if app._mvc_check else None
+            self.redraw_all(self._canvas)
+            hash2 = get_hash(self) if self._mvc_check else None
             if (hash1 != hash2):
-                app._mvc_violation('you may not change the app state (the model) in redraw_all (the view)')
+                self._mvc_violation('you may not change the app state (the model) in redraw_all (the view)')
         finally:
-            app._canvas.inRedrawAll = False
-        app._canvas.update()
+            self._canvas.inRedrawAll = False
+        self._canvas.update()
 
-    def _deferred_method_call(app, after_id, after_delay, after_fn, replace=False):
-        current_id = app._after_id_map.get(after_id, None)  # renomeado de 'id'
+    def _deferred_method_call(self, after_id, after_delay, after_fn, replace=False):
+        current_id = self._after_id_map.get(after_id, None)  # renomeado de 'id'
 
         def after_fn_wrapper(after_fn=after_fn, after_id=after_id):
-            app._after_id_map.pop(after_id, None)
+            self._after_id_map.pop(after_id, None)
             after_fn()
 
         if (current_id is None) or replace:
             if current_id:
-                app._root.after_cancel(current_id)
-            app._after_id_map[after_id] = app._root.after(after_delay, after_fn_wrapper)
+                self._root.after_cancel(current_id)
+            self._after_id_map[after_id] = self._root.after(after_delay, after_fn_wrapper)
 
 
-    def _deferred_redraw_all(app):
-        app._deferred_method_call(after_id='deferredRedrawAll', after_delay=100, after_fn=app._redraw_all_wrapper, replace=True)
+    def _deferred_redraw_all(self):
+        self._deferred_method_call(after_id='deferredRedrawAll', after_delay=100, after_fn=self._redraw_all_wrapper, replace=True)
 
     @_safe_method
-    def _app_started_wrapper(app):
-        app.app_started()
-        app._redraw_all_wrapper()
+    def _app_started_wrapper(self):
+        self.app_started()
+        self._redraw_all_wrapper()
 
     _key_name_map = { '\t':'Tab', '\n':'Enter', '\r':'Enter', '\b':'Backspace',
                    chr(127):'Delete', chr(27):'Escape', ' ':'Space' }
@@ -480,136 +480,136 @@ class App(object):
                           lambda *args: App._use_event_key('char'))
 
     @_safe_method
-    def _key_pressed_wrapper(app, event):
+    def _key_pressed_wrapper(self, event):
         event = App.KeyEventWrapper(event)
         if (event.key == 'control-s'):
-            app.save_snapshot()
+            self.save_snapshot()
         elif (event.key == 'control-p'):
-            app._toggle_paused()
-            app._redraw_all_wrapper()
+            self._toggle_paused()
+            self._redraw_all_wrapper()
         elif (event.key == 'control-q'):
-            app.quit()
+            self.quit()
         elif (event.key == 'control-x'):
             os._exit(0) # hard exit avoids tkinter error messages
-        elif (app._running and
-            (not app._paused) and
-            app._method_is_overridden('key_pressed') and
+        elif (self._running and
+            (not self._paused) and
+            self._method_is_overridden('key_pressed') and
             event.key != 'Modifier_Key'):
 
-            app.key_pressed(event)
-            app._redraw_all_wrapper()
+            self.key_pressed(event)
+            self._redraw_all_wrapper()
 
     @_safe_method
-    def _key_released_wrapper(app, event):
-        if (not app._running) or app._paused or (not app._method_is_overridden('key_released')):
+    def _key_released_wrapper(self, event):
+        if (not self._running) or self._paused or (not self._method_is_overridden('key_released')):
             return
         event = App.KeyEventWrapper(event)
         if event.key != 'Modifier_Key':
-            app.key_released(event)
-            app._redraw_all_wrapper()
+            self.key_released(event)
+            self._redraw_all_wrapper()
 
     @_safe_method
-    def _mouse_pressed_wrapper(app, event):
-        if (not app._running) or app._paused: return
-        if ((event.x < 0) or (event.x > app.width) or
-            (event.y < 0) or (event.y > app.height)):
-            app._mouse_pressed_outside_window = True
+    def _mouse_pressed_wrapper(self, event):
+        if (not self._running) or self._paused: return
+        if ((event.x < 0) or (event.x > self.width) or
+            (event.y < 0) or (event.y > self.height)):
+            self._mouse_pressed_outside_window = True
         else:
-            app._mouse_pressed_outside_window = False
-            app._mouse_is_pressed = True
-            app._last_mouse_posn = (event.x, event.y)
-            if (app._method_is_overridden('mouse_pressed')):
-                app.mouse_pressed(event)
-                app._redraw_all_wrapper()
+            self._mouse_pressed_outside_window = False
+            self._mouse_is_pressed = True
+            self._last_mouse_posn = (event.x, event.y)
+            if (self._method_is_overridden('mouse_pressed')):
+                self.mouse_pressed(event)
+                self._redraw_all_wrapper()
 
     @_safe_method
-    def _mouse_released_wrapper(app, event):
-        if (not app._running) or app._paused: return
-        app._mouse_is_pressed = False
-        if app._mouse_pressed_outside_window:
-            app._mouse_pressed_outside_window = False
-            app._size_changed_wrapper()
+    def _mouse_released_wrapper(self, event):
+        if (not self._running) or self._paused: return
+        self._mouse_is_pressed = False
+        if self._mouse_pressed_outside_window:
+            self._mouse_pressed_outside_window = False
+            self._size_changed_wrapper()
         else:
-            app._last_mouse_posn = (event.x, event.y)
-            if (app._method_is_overridden('mouse_released')):
-                app.mouse_released(event)
-                app._redraw_all_wrapper()
+            self._last_mouse_posn = (event.x, event.y)
+            if (self._method_is_overridden('mouse_released')):
+                self.mouse_released(event)
+                self._redraw_all_wrapper()
 
     @_safe_method
-    def _timer_fired_wrapper(app):
-        if (not app._running) or (not app._method_is_overridden('timer_fired')): return
-        if (not app._paused):
-            app.timer_fired()
-            app._redraw_all_wrapper()
-        app._deferred_method_call(after_id='_timer_fired_wrapper', after_delay=app.timer_delay, after_fn=app._timer_fired_wrapper)
+    def _timer_fired_wrapper(self):
+        if (not self._running) or (not self._method_is_overridden('timer_fired')): return
+        if (not self._paused):
+            self.timer_fired()
+            self._redraw_all_wrapper()
+        self._deferred_method_call(after_id='_timer_fired_wrapper', after_delay=self.timer_delay, after_fn=self._timer_fired_wrapper)
 
     @_safe_method
-    def _size_changed_wrapper(app, event=None):
-        if (not app._running): return
+    def _size_changed_wrapper(self, event=None):
+        if (not self._running): return
         if (event and ((event.width < 2) or (event.height < 2))): return
-        if (app._mouse_pressed_outside_window): return
-        app.width,app.height,app.winx,app.winy = [int(v) for v in app._root.winfo_geometry().replace('x','+').split('+')]
-        if (app._last_window_dims is None):
-            app._last_window_dims = (app.width, app.height, app.winx, app.winy)
+        if (self._mouse_pressed_outside_window): return
+        self.width,self.height,self.winx,self.winy = [int(v) for v in self._root.winfo_geometry().replace('x','+').split('+')]
+        if (self._last_window_dims is None):
+            self._last_window_dims = (self.width, self.height, self.winx, self.winy)
         else:
-            new_dims =(app.width, app.height, app.winx, app.winy)
-            if (app._last_window_dims != new_dims):
-                app._last_window_dims = new_dims
-                app.update_title()
-                app.size_changed()
-                app._deferred_redraw_all() # avoid resize crashing on some platforms
+            new_dims =(self.width, self.height, self.winx, self.winy)
+            if (self._last_window_dims != new_dims):
+                self._last_window_dims = new_dims
+                self.update_title()
+                self.size_changed()
+                self._deferred_redraw_all() # avoid resize crashing on some platforms
 
     @_safe_method
-    def _mouse_motion_wrapper(app):
-        if (not app._running): return
-        mouse_moved_exists = app._method_is_overridden('mouse_moved')
-        mouse_dragged_exists = app._method_is_overridden('mouse_dragged')
-        if ((not app._paused) and
-            (not app._mouse_pressed_outside_window) and
-            (((not app._mouse_is_pressed) and mouse_moved_exists) or
-             (app._mouse_is_pressed and mouse_dragged_exists))):
+    def _mouse_motion_wrapper(self):
+        if (not self._running): return
+        mouse_moved_exists = self._method_is_overridden('mouse_moved')
+        mouse_dragged_exists = self._method_is_overridden('mouse_dragged')
+        if ((not self._paused) and
+            (not self._mouse_pressed_outside_window) and
+            (((not self._mouse_is_pressed) and mouse_moved_exists) or
+             (self._mouse_is_pressed and mouse_dragged_exists))):
             class MouseMotionEvent(object): pass
             event = MouseMotionEvent()
-            root = app._root
+            root = self._root
             event.x = root.winfo_pointerx() - root.winfo_rootx()
             event.y = root.winfo_pointery() - root.winfo_rooty()
-            if ((app._last_mouse_posn !=  (event.x, event.y)) and
-                (event.x >= 0) and (event.x <= app.width) and
-                (event.y >= 0) and (event.y <= app.height)):
-                if (app._mouse_is_pressed): app.mouse_dragged(event)
-                else: app.mouse_moved(event)
-                app._last_mouse_posn = (event.x, event.y)
-                app._redraw_all_wrapper()
+            if ((self._last_mouse_posn !=  (event.x, event.y)) and
+                (event.x >= 0) and (event.x <= self.width) and
+                (event.y >= 0) and (event.y <= self.height)):
+                if (self._mouse_is_pressed): self.mouse_dragged(event)
+                else: self.mouse_moved(event)
+                self._last_mouse_posn = (event.x, event.y)
+                self._redraw_all_wrapper()
         if (mouse_moved_exists or mouse_dragged_exists):
-            app._deferred_method_call(after_id='mouseMotionWrapper', after_delay=app.mouse_moved_delay, after_fn=app._mouse_motion_wrapper)
+            self._deferred_method_call(after_id='mouseMotionWrapper', after_delay=self.mouse_moved_delay, after_fn=self._mouse_motion_wrapper)
 
-    def update_title(app):
-        app._title = app._title or type(app).__name__
-        app._root.title(f'{app._title} ({app.width} x {app.height})')
+    def update_title(self):
+        self._title = self._title or type(self).__name__
+        self._root.title(f'{self._title} ({self.width} x {self.height})')
 
-    def get_quit_message(app):
-        app_label = type(app).__name__
-        if (app._title != app_label):
-            if (app._title.startswith(app_label)):
-                app_label = app._title
+    def get_quit_message(self):
+        app_label = type(self).__name__
+        if (self._title != app_label):
+            if (self._title.startswith(app_label)):
+                app_label = self._title
             else:
-                app_label += f" '{app._title}'"
+                app_label += f" '{self._title}'"
         return f"*** Closing {app_label}.  Bye! ***\n"
 
-    def _show_root_window(app):
-        root = app._root
+    def _show_root_window(self):
+        root = self._root
         root.update(); root.deiconify(); root.lift(); root.focus()
 
-    def _hide_root_window(app):
-        root = app._root
+    def _hide_root_window(self):
+        root = self._root
         root.withdraw()
 
     @_safe_method
-    def run(app):
-        app._mouse_is_pressed = False
-        app._last_mouse_posn = (-1, -1)
-        app._last_window_dims= None # set in sizeChangedWrapper
-        app._after_id_map = {}
+    def run(self):
+        self._mouse_is_pressed = False
+        self._last_mouse_posn = (-1, -1)
+        self._last_window_dims= None # set in sizeChangedWrapper
+        self._after_id_map = {}
         # create the singleton root window
         if (App._the_root is None):
             App._the_root = Tk()
@@ -622,27 +622,27 @@ class App(object):
             App._the_root.bind("<Configure>", lambda event: App._the_root.app._size_changed_wrapper(event))
         else:
             App._the_root.canvas.destroy()
-        app._root = root = App._the_root # singleton root!
-        root.app = app
-        root.geometry(f'{app.width}x{app.height}+{app.winx}+{app.winy}')
-        app.update_title()
+        self._root = root = App._the_root # singleton root!
+        root.app = self
+        root.geometry(f'{self.width}x{self.height}+{self.winx}+{self.winy}')
+        self.update_title()
         # create the canvas
-        root.canvas = app._canvas = WrappedCanvas(app)
-        app._canvas.pack(fill=BOTH, expand=YES)
+        root.canvas = self._canvas = WrappedCanvas(self)
+        self._canvas.pack(fill=BOTH, expand=YES)
         # initialize, start the timer, and launch the app
-        app._running = True
-        app._paused = False
-        app._app_started_wrapper()
-        app._timer_fired_wrapper()
-        app._mouse_motion_wrapper()
-        app._show_root_window()
+        self._running = True
+        self._paused = False
+        self._app_started_wrapper()
+        self._timer_fired_wrapper()
+        self._mouse_motion_wrapper()
+        self._show_root_window()
         root.mainloop()
-        app._hide_root_window()
-        app._running = False
-        for after_id in app._after_id_map: app._root.after_cancel(app._after_id_map[after_id])
-        app._after_id_map.clear() # for safety
-        app.app_stopped()
-        print(app.get_quit_message())
+        self._hide_root_window()
+        self._running = False
+        for after_id in self._after_id_map: self._root.after_cancel(self._after_id_map[after_id])
+        self._after_id_map.clear() # for safety
+        self.app_stopped()
+        print(self.get_quit_message())
 
 ####################################
 # TopLevelApp:
@@ -652,108 +652,108 @@ class App(object):
 class TopLevelApp(App):
     _apps = {} # maps fn_prefix to app
 
-    def __init__(app, fn_prefix='', **kwargs):
+    def __init__(self, fn_prefix='', **kwargs):
         if (fn_prefix in TopLevelApp._apps):
             print(f'Quitting previous version of {fn_prefix} TopLevelApp.')
             TopLevelApp._apps[fn_prefix].quit()
         if ((fn_prefix != '') and ('title' not in kwargs)):
             kwargs['title'] = f"TopLevelApp '{fn_prefix}'"
-        TopLevelApp._apps[fn_prefix] = app
-        app._fnPrefix = fn_prefix
-        app._callersGlobals = inspect.stack()[1][0].f_globals
+        TopLevelApp._apps[fn_prefix] = self
+        self._fnPrefix = fn_prefix
+        self._callersGlobals = inspect.stack()[1][0].f_globals
         super().__init__(**kwargs)
 
-    def _callFn(app, fn, *args):
-        fn = app._fnPrefix + fn
-        if (fn in app._callersGlobals): app._callersGlobals[fn](*args)
+    def _callFn(self, fn, *args):
+        fn = self._fnPrefix + fn
+        if (fn in self._callersGlobals): self._callersGlobals[fn](*args)
 
-    def redraw_all(app, canvas): app._callFn('redraw_all', app, canvas)
-    def app_started(app): app._callFn('app_started', app)
-    def app_stopped(app): app._callFn('app_stopped', app)
-    def key_pressed(app, event): app._callFn('key_pressed', app, event)
-    def key_released(app, event): app._callFn('key_released', app, event)
-    def mouse_pressed(app, event): app._callFn('mouse_pressed', app, event)
-    def mouse_released(app, event): app._callFn('mouse_released', app, event)
-    def mouse_moved(app, event): app._callFn('mouse_moved', app, event)
-    def mouse_dragged(app, event): app._callFn('mouse_dragged', app, event)
-    def timer_fired(app): app._callFn('timer_fired', app)
-    def size_changed(app): app._callFn('size_changed', app)
+    def redraw_all(self, canvas): self._callFn('redraw_all', self, canvas)
+    def app_started(self): self._callFn('app_started', self)
+    def app_stopped(self): self._callFn('app_stopped', self)
+    def key_pressed(self, event): self._callFn('key_pressed', self, event)
+    def key_released(self, event): self._callFn('key_released', self, event)
+    def mouse_pressed(self, event): self._callFn('mouse_pressed', self, event)
+    def mouse_released(self, event): self._callFn('mouse_released', self, event)
+    def mouse_moved(self, event): self._callFn('mouse_moved', self, event)
+    def mouse_dragged(self, event): self._callFn('mouse_dragged', self, event)
+    def timer_fired(self): self._callFn('timer_fired', self)
+    def size_changed(self): self._callFn('size_changed', self)
 
 ####################################
 # ModalApp + Mode:
 ####################################
 
 class ModalApp(App):
-    def __init__(app, active_mode=None, **kwargs):
-        app._running = False
-        app._active_mode = None
-        app.set_active_mode(active_mode)
+    def __init__(self, active_mode=None, **kwargs):
+        self._running = False
+        self._active_mode = None
+        self.set_active_mode(active_mode)
         super().__init__(**kwargs)
 
-    def set_active_mode(app, mode):
+    def set_active_mode(self, mode):
         if (mode is None): mode = Mode()  # default empty mode
         if (not isinstance(mode, Mode)):
             raise TypeError('active_mode must be a Mode instance!')
-        if (mode.app not in [None, app]):
+        if (mode.app not in [None, self]):
             raise ValueError('Modes cannot be added to two different apps!')
 
-        if (app._active_mode != mode):
-            mode.app = app
-            if (app._active_mode is not None):
-                app._active_mode.modeDeactivated()
-            app._active_mode = mode
-            if (app._running):
-                app.start_active_mode()
+        if (self._active_mode != mode):
+            mode.app = self
+            if (self._active_mode is not None):
+                self._active_mode.modeDeactivated()
+            self._active_mode = mode
+            if (self._running):
+                self.start_active_mode()
 
-    def start_active_mode(app):
-        app._active_mode.width, app._active_mode.height = app.width, app.height
-        if (not app._active_mode._appStartedCalled):
-            app._active_mode.app_started() # called once per mode
-            app._active_mode._appStartedCalled = True
-        app._active_mode.modeActivated()  # called each time a mode is activated
-        app._redraw_all_wrapper()
+    def start_active_mode(self):
+        self._active_mode.width, self._active_mode.height = self.width, self.height
+        if (not self._active_mode._appStartedCalled):
+            self._active_mode.app_started() # called once per mode
+            self._active_mode._appStartedCalled = True
+        self._active_mode.modeActivated()  # called each time a mode is activated
+        self._redraw_all_wrapper()
 
-    def redraw_all(app, canvas):
-        if (app._active_mode != None): app._active_mode.redraw_all(canvas)
-    def app_started(app):
-        if (app._active_mode != None): app.start_active_mode()
-    def app_stopped(app):
-        if (app._active_mode != None): app._active_mode.modeDeactivated()
-    def key_pressed(app, event):
-        if (app._active_mode != None): app._active_mode.key_pressed(event)
-    def key_released(app, event):
-        if (app._active_mode != None): app._active_mode.key_released(event)
-    def mouse_pressed(app, event):
-        if (app._active_mode != None): app._active_mode.mouse_pressed(event)
-    def mouse_released(app, event):
-        if (app._active_mode != None): app._active_mode.mouse_released(event)
-    def mouse_moved(app, event):
-        if (app._active_mode != None): app._active_mode.mouse_moved(event)
-    def mouse_dragged(app, event):
-        if (app._active_mode != None): app._active_mode.mouse_dragged(event)
-    def timer_fired(app):
-        if (app._active_mode != None): app._active_mode.timer_fired()
-    def size_changed(app):
-        if (app._active_mode != None):
-            app._active_mode.width, app._active_mode.height = app.width, app.height
-            app._active_mode.size_changed()
+    def redraw_all(self, canvas):
+        if (self._active_mode != None): self._active_mode.redraw_all(canvas)
+    def app_started(self):
+        if (self._active_mode != None): self.start_active_mode()
+    def app_stopped(self):
+        if (self._active_mode != None): self._active_mode.modeDeactivated()
+    def key_pressed(self, event):
+        if (self._active_mode != None): self._active_mode.key_pressed(event)
+    def key_released(self, event):
+        if (self._active_mode != None): self._active_mode.key_released(event)
+    def mouse_pressed(self, event):
+        if (self._active_mode != None): self._active_mode.mouse_pressed(event)
+    def mouse_released(self, event):
+        if (self._active_mode != None): self._active_mode.mouse_released(event)
+    def mouse_moved(self, event):
+        if (self._active_mode != None): self._active_mode.mouse_moved(event)
+    def mouse_dragged(self, event):
+        if (self._active_mode != None): self._active_mode.mouse_dragged(event)
+    def timer_fired(self):
+        if (self._active_mode != None): self._active_mode.timer_fired()
+    def size_changed(self):
+        if (self._active_mode != None):
+            self._active_mode.width, self._active_mode.height = self.width, self.height
+            self._active_mode.size_changed()
 
 class Mode(App):
-    def __init__(mode, **kwargs):
-        mode.app = None
-        mode._appStartedCalled = False
+    def __init__(self, **kwargs):
+        self.app = None
+        self._appStartedCalled = False
         super().__init__(autorun=False, **kwargs)
 
-    def modeActivated(mode):
+    def modeActivated(self):
         # Este método é chamado quando o modo é ativado.
         # Mantido vazio para ser sobrescrito por subclasses.
         pass
 
-    def modeDeactivated(mode):
+    def modeDeactivated(self):
         # Este método é chamado quando o modo é desativado.
         # Mantido vazio para ser sobrescrito por subclasses.
         pass
-    def load_image(mode, path=None): return mode.app.load_image(path)
+    def load_image(self, path=None): return self.app.load_image(path)
 
 ####################################
 # runApp()
@@ -765,7 +765,9 @@ print(f'Loaded cmu_112_graphics version {App.version} (last updated {App.last_up
 
 if __name__ == '__main__':
     try:
-        import cmu_112_graphics_tests
-    except ModuleNotFoundError:
-        # O módulo de testes é opcional, ignoramos se não existir
-        pass
+        import pytest
+        # Executa os testes do arquivo específico
+        pytest.main(["-v", "tests/test_cmu_112_graphics.py"])
+    except ImportError:
+        # Se o pytest não estiver instalado, apenas ignora
+        print("pytest não encontrado. Instale com 'pip install pytest' para rodar os testes.")
