@@ -763,11 +763,22 @@ runApp = TopLevelApp
 
 print(f'Loaded cmu_112_graphics version {App.version} (last updated {App.last_updated})')
 
+#Roda testes automatizado
 if __name__ == '__main__':
+    import subprocess
+    import sys
+
     try:
-        import pytest
-        # Executa os testes do arquivo específico
-        pytest.main(["-v", "tests/test_cmu_112_graphics.py"])
-    except ImportError:
-        # Se o pytest não estiver instalado, apenas ignora
-        print("pytest não encontrado. Instale com 'pip install pytest' para rodar os testes.")
+        # Executa pytest em todos os arquivos da pasta tests/
+        # -v : verbose, mostra detalhes de cada teste
+        # --cov=. : gera relatório de cobertura de todo o projeto
+        # --cov-report=term-missing : mostra no terminal quais linhas não foram testadas
+        subprocess.run(
+            [sys.executable, "-m", "pytest", "-v", "--cov=.", "--cov-report=term-missing", "tests/"],
+            check=True
+        )
+    except FileNotFoundError:
+        print("pytest não encontrado. Instale com 'pip install pytest pytest-cov' para rodar os testes.")
+    except subprocess.CalledProcessError as e:
+        print(f"Alguns testes falharam (código de saída {e.returncode}).")
+
