@@ -30,8 +30,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest pytest-cov Pillow
 
-      - name: Run tests and coverage
-        run: python main.py
+      - name: Install Xvfb for virtual display
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
+      - name: Run tests with virtual display
+        run: xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24 -name 'Python Tests'" python main.py
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
