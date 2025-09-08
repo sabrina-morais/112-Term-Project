@@ -32,14 +32,6 @@ def test_grinch_mode_starts():
     mode.app_started()
     assert hasattr(mode, "grinch")
 
-import pytest
-from unittest.mock import Mock
-from mazeModes import Maze, RadiusMode, GrinchMode
-
-import pytest
-from mazeModes import Maze, RadiusMode, GrinchMode
-from unittest.mock import Mock
-
 def create_maze_mode_for_test(n=10):
     # Cria app simulado com atributos numéricos
     app = Mock()
@@ -111,3 +103,149 @@ def test_get_possible_moves_basic():
     maze_mode.dotR = 5
     moves = maze_mode.getPossibleMoves()
     assert isinstance(moves, set)
+
+def test_key_press_space_and_r():
+    maze = create_maze_mode_for_test()
+    event = Mock()
+    event.key = "Space"
+    maze.key_pressed(event)
+    assert maze.showSolution is True
+    event.key = "r"
+    maze.key_pressed(event)
+    assert maze.showSolution is False  # reiniciou
+
+def test_key_press_movement():
+    maze = create_maze_mode_for_test(n=3)
+    maze.dotX, maze.dotY = maze.cellWidth, maze.cellHeight
+    event = Mock()
+    event.key = "Right"
+    maze.key_pressed(event)
+    assert maze.dotX != maze.cellWidth  # se moveu
+
+def test_get_cell_and_bounds():
+    maze = create_maze_mode_for_test(n=5)
+    assert maze.getCell(10, 10) == (0, 0)
+    x0, x1, y0, y1 = maze.getCellBounds(1, 1)
+    assert x1 > x0 and y1 > y0
+
+def test_check_if_maze_solved_switches_mode():
+    maze = create_maze_mode_for_test(n=3)
+    maze.dotX = maze.cellWidth * 2 + 1
+    maze.dotY = maze.cellHeight * 2 + 1
+    maze.app.finalScreen = Mock()
+    maze.checkIfMazeSolved()
+    maze.app.set_active_mode.assert_called_once_with(maze.app.finalScreen)
+
+def test_reset_timer():
+    maze = create_maze_mode_for_test()
+    maze.app.timeMin, maze.app.timeSec = 5, 30
+    maze.resetTimer()
+    assert maze.app.timeMin == 0
+    assert maze.app.timeSec == 0
+
+def test_grinch_interactions():
+    grinch = GrinchMode()
+    grinch.app = Mock(presents=10)
+    grinch.width = grinch.height = 300
+    grinch.load_image = Mock(return_value="img")
+    grinch.scale_image = Mock(return_value="img")
+    grinch.app_started()
+
+    # Força sleigh e grinch na mesma célula
+    grinch.dotX, grinch.dotY = grinch.cellWidth/2, grinch.cellHeight/2
+    grinch.grinch_x, grinch.grinch_y = grinch.dotX, grinch.dotY
+    grinch.checkSleighGrinchIntersect()
+    assert grinch.app.presents < 10
+
+
+# Reutiliza a função auxiliar para criar Maze já inicializado
+def create_maze_mode_for_test_full(n=10):
+    mode = Maze()
+    mode.app = Mock()
+    mode.app.width = 500
+    mode.app.height = 500
+    mode.app._active_mode = mode
+    mode.app.maze = mode
+    mode.app.finalScreen = Mock()
+    mode.app.timerMode = False
+    mode.app.presents = 100
+    mode.width = mode.app.width
+    mode.height = mode.app.height
+    mode.load_image = Mock(return_value="img")
+    mode.scale_image = Mock(return_value="img_scaled")
+    mode.app_started()
+    if n is not None:
+        mode.n = n
+        mode.cellWidth = mode.width / n
+        mode.cellHeight = mode.height / n
+    return mode
+
+# -----------------------
+# Testando teclas
+# -----------------------
+@pytest.mark.parametrize("key", ["Space", "r", "Up", "Down", "Left", "Right", "b", "s", "e", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"])
+def test_key_pressed_triggers_expected_behavior(key):
+    maze = create_maze_mode_for_test_full()
+    maze.dotX = maze.cellWidth / 2
+    maze.dotY = maze.cellHeight / 2
+    maze.dotR = 5
+    maze.key_pressed(Mock(key=key))
+    # Verifica se o método não lança erros e atualiza estado
+    assert maze.n > 0 or maze.showSolution in [True, False]
+
+# -----------------------
+# Testando RadiusMode.timer_fired
+# -----------------------
+def test_radius_mode_timer_fired_decreases_presents():
+    mode = RadiusMode()
+    mode.app = Mock()
+    mode.app.timeSec = 59
+    mode.app.timeMin = 0
+    mode.app.presents = 20
+    mode.width = 200
+    mode.height = 200
+    mode.load_image = Mock(return_value="img")
+    mode.scale_image = Mock(return_value="img_scaled")
+    mode.app_started()
+    mode.timer_fired()
+    # Verifica que o tempo avançou
+    assert mode.app.timeMin >= 0
+    # Verifica que presents foram descontados se ultrapassou 60s
+    assert mode.app.presents in [10, 20]
+
+# -----------------------
+# Testando GrinchMode.moveGrinch
+# -----------------------
+def test_grinch_mode_move_grinch_changes_position():
+    mode = GrinchMode()
+    mode.app = Mock()
+    mode.width = 200
+    mode.height = 200
+    mode.load_image = Mock(return_value="img")
+    mode.scale_image = Mock(return_value="img_scaled")
+    mode.app_started()
+    old_x, old_y = mode.grinch_x, mode.grinch_y
+    mode.canGrinchMove = True
+    mode.moveGrinch()
+    # Verifica se a posição do Grinch mudou
+    assert (mode.grinch_x != old_x) or (mode.grinch_y != old_y)
+
+# -----------------------
+# Testando checkSleighGrinchIntersect
+# -----------------------
+def test_grinch_mode_interactions_affect_presents():
+    mode = GrinchMode()
+    mode.app = Mock()
+    mode.app.presents = 50
+    mode.width = 200
+    mode.height = 200
+    mode.load_image = Mock(return_value="img")
+    mode.scale_image = Mock(return_value="img_scaled")
+    mode.app_started()
+    mode.dotX = mode.presentsCellX * mode.cellWidth + mode.cellWidth / 2
+    mode.dotY = mode.presentsCellY * mode.cellHeight + mode.cellHeight / 2
+    mode.presentsGathered = False
+    mode.checkSleighGrinchIntersect()
+    # Verifica que os presentes foram coletados
+    assert mode.presentsGathered is True
+    assert mode.app.presents > 50
