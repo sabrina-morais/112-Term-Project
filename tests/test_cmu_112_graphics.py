@@ -43,13 +43,3 @@ def test_wrapped_canvas_logs_calls():
     canvas = WrappedCanvas(app)
     canvas.loggedDrawingCalls.append("test_call")
     assert "test_call" in canvas.loggedDrawingCalls
-
-# ---------------- INTEGRAÇÃO ----------------
-
-class DummyEvent:
-    """Simula um evento do Tkinter"""
-    def __init__(self, x=0, y=0, keysym=None, char=None):
-        self.x = x
-        self.y = y
-        self.keysym = keysym
-        self.char = char
